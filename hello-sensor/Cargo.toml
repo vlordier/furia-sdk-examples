@@ -1,0 +1,12 @@
+[package]
+name = "hello-sensor"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing SensorAdapter — ingest radar track data"
+
+[dependencies]
+furia-sdk.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+uuid.workspace = true

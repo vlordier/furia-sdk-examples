@@ -1,0 +1,12 @@
+[package]
+name = "hello-simulation"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing SimulationProvider — drone patrol with fuel consumption"
+
+[dependencies]
+furia-sdk.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+uuid.workspace = true

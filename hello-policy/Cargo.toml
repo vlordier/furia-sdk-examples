@@ -1,0 +1,12 @@
+[package]
+name = "hello-policy"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing PolicyProvider — ROE with civilian protection"
+
+[dependencies]
+furia-sdk.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+uuid.workspace = true
