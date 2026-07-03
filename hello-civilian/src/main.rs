@@ -11,6 +11,11 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::Scenario;
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// Population model for an urban area with time-of-day awareness.
 struct UrbanPopulation {
     regions: Vec<PopulationRegion>,
@@ -21,7 +26,7 @@ impl UrbanPopulation {
         Self {
             regions: vec![PopulationRegion {
                 region_id: "downtown".into(),
-                boundary: vec![(48.85, 2.35), (48.86, 2.36)],
+                boundary: vec![(DEMO_LAT, DEMO_LON), (48.86, 2.36)],
                 estimated_population: 50_000,
                 density_per_km2: 5_000.0,
                 time_of_day_multiplier: 0.8,
@@ -70,7 +75,7 @@ impl CivilianDensityProvider for UrbanPopulation {
 fn main() {
     let mut pop = UrbanPopulation::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let scenario = Scenario { id: "civ".into(), name: "Civilian Demo".into(), duration_secs: 3600, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+    let scenario = Scenario { id: "civ".into(), name: "Civilian Demo".into(), duration_secs: DEMO_DURATION_SECS, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
     pop.init(&scenario, &handle);
 
     println!("=== Civilian Density ===");
@@ -78,7 +83,7 @@ fn main() {
         println!(" {}: {} ppl, {:.0}/km2", r.region_id, r.estimated_population, r.density_per_km2);
     }
 
-    let ce = pop.estimate_collateral(48.855, 2.355, 50.0, "Mk82");
+    let ce = pop.estimate_collateral(DEMO_LAT + 0.005, DEMO_LON + 0.005, 50.0, "Mk82");
     println!(" Collateral estimate: {} civilians in KZ — proportional: {}", ce.estimated_civilians_in_kz, ce.proportional_ok);
 }
 
@@ -95,14 +100,14 @@ mod tests {
     #[test]
     fn test_collateral_small_weapon_proportional() {
         let p = UrbanPopulation::new();
-        let ce = p.estimate_collateral(48.85, 2.35, 10.0, "small");
+        let ce = p.estimate_collateral(DEMO_LAT, DEMO_LON, 10.0, "small");
         assert!(ce.proportional_ok);
     }
 
     #[test]
     fn test_collateral_large_weapon_not_proportional() {
         let p = UrbanPopulation::new();
-        let ce = p.estimate_collateral(48.85, 2.35, 500.0, "large");
+        let ce = p.estimate_collateral(DEMO_LAT, DEMO_LON, 500.0, "large");
         assert!(!ce.proportional_ok);
     }
 }

@@ -12,6 +12,11 @@ use furia_sdk::terrain::{
 };
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// A terrain analyst that classifies by a simple slope heuristic.
 struct SlopeTerrain {
     elevation: Vec<(f64, f64, f64)>, // (lat, lon, elev_m)
@@ -19,7 +24,7 @@ struct SlopeTerrain {
 
 impl SlopeTerrain {
     fn new() -> Self {
-        Self { elevation: vec![(48.85, 2.35, 150.0), (48.86, 2.36, 200.0)] }
+        Self { elevation: vec![(DEMO_LAT, DEMO_LON, 150.0), (48.86, 2.36, 200.0)] }
     }
 
     fn slope_between(&self, lat: f64, lon: f64) -> f64 {
@@ -27,7 +32,7 @@ impl SlopeTerrain {
         let (_, _, e) = self.elevation.iter().min_by(|a, b| {
             let da = (a.0 - lat).powi(2) + (a.1 - lon).powi(2);
             let db = (b.0 - lat).powi(2) + (b.1 - lon).powi(2);
-            da.partial_cmp(&db).unwrap()
+            da.partial_cmp(&db).expect("float comparison should not produce NaN")
         }).unwrap_or(&(0.0, 0.0, 0.0));
         (e / 1000.0) * 100.0 // crude slope pct
     }
@@ -92,10 +97,10 @@ fn main() {
     t.init(&scenario, &handle);
 
     println!("=== Terrain Analysis ===");
-    println!(" (48.85, 2.35) → {:?}", t.mobility_class(48.85, 2.35));
+    println!(" ({:.2}, {:.2}) → {:?}", DEMO_LAT, DEMO_LON, t.mobility_class(DEMO_LAT, DEMO_LON));
     println!(" (48.90, 2.40) → {:?}", t.mobility_class(48.90, 2.40));
 
-    let route = t.assess_route(&[(48.85, 2.35), (48.86, 2.36)]);
+    let route = t.assess_route(&[(DEMO_LAT, DEMO_LON), (48.86, 2.36)]);
     println!(" Route trafficable: {} (avg {:.1} kph)", route.trafficable, route.avg_speed_kph);
 }
 
@@ -106,13 +111,13 @@ mod tests {
     #[test]
     fn test_low_slope_is_restricted() {
         let t = SlopeTerrain::new();
-        assert_eq!(t.mobility_class(48.85, 2.35), MobilityClass::Restricted);
+        assert_eq!(t.mobility_class(DEMO_LAT, DEMO_LON), MobilityClass::Restricted);
     }
 
     #[test]
     fn test_route_is_trafficable() {
         let t = SlopeTerrain::new();
-        let r = t.assess_route(&[(48.85, 2.35), (48.86, 2.36)]);
+        let r = t.assess_route(&[(DEMO_LAT, DEMO_LON), (48.86, 2.36)]);
         assert!(r.trafficable);
     }
 

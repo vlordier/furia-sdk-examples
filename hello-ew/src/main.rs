@@ -12,6 +12,16 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::{Scenario, SimEvent};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// ── Confidence constants ────────────────────────────────────────
+const HIGH_CONFIDENCE: f64 = 0.85;
+const MEDIUM_CONFIDENCE: f64 = 0.7;
+const LOW_CONFIDENCE: f64 = 0.5;
+
 /// An EW simulator that jams a single emitter and sweeps for others.
 struct JammerSim {
     jammer: Option<JammerConfig>,
@@ -65,7 +75,7 @@ impl EWSimProvider for JammerSim {
             active_jammers: self.jammer.clone().into_iter().collect(),
             detected_emitters: self.esm_sweep(),
             spectrum_state: self.spectrum_state(),
-            comms_degradation: HashMap::from([("link-001".into(), 0.85)]),
+            comms_degradation: HashMap::from([("link-001".into(), HIGH_CONFIDENCE as f32)]),
         }
     }
 

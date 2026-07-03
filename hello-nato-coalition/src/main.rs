@@ -8,6 +8,11 @@
 use furia_sdk::module_handle::{ModuleHandle, SecurityContext, ClearanceLevel, ModuleHealth, LogLevel};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 fn main() {
     println!("Furia NATO Coalition Hello (SDK example)");
 

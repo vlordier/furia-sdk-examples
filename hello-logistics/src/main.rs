@@ -12,6 +12,17 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::{Scenario, SimEvent};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// Fuel burn rate: 0.3 = 30% per hour (simplified model for demo).
+// Note: logistics uses 0.3, simulation uses 0.5, platform uses 0.3.
+// These are intentionally different to demonstrate trait polymorphism
+// across crate boundaries. In production, a shared SDK type would
+// standardise fuel consumption modelling.
+
 /// A logistics simulator that burns fuel for a single convoy.
 struct ConvoyLogistics {
     vehicles: HashMap<String, VehicleLogistics>,
@@ -30,7 +41,7 @@ impl ConvoyLogistics {
             convoys: vec![ConvoyState {
                 convoy_id: "convoy-a".into(),
                 vehicles: vec!["truck-001".into()],
-                position: (48.85, 2.35), speed_kph: 40.0,
+                position: (DEMO_LAT, DEMO_LON), speed_kph: 40.0,
                 destination_id: "base-bravo".into(), fuel_consumed_liters: 0.0,
             }],
         }
@@ -81,13 +92,13 @@ impl LogisticsProvider for ConvoyLogistics {
 fn main() {
     let mut logi = ConvoyLogistics::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let scenario = Scenario { id: "logi-test".into(), name: "Logi Demo".into(), duration_secs: 3600, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+    let scenario = Scenario { id: "logi-test".into(), name: "Logi Demo".into(), duration_secs: DEMO_DURATION_SECS, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
     logi.init(&scenario, &handle);
 
     println!("=== Logistics Simulation ===");
     for _ in 0..5 {
         let events = logi.tick_consumption(Duration::from_secs(300));
-        let v = logi.vehicle_state("truck-001").unwrap();
+        let v = logi.vehicle_state("truck-001").expect("truck-001 should be registered");
         println!(" truck-001 fuel: {:.1}L — events: {}", v.fuel_liters, events.len());
     }
 }

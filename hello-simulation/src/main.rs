@@ -11,6 +11,17 @@ use furia_sdk::module_handle::{LogLevel, ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::{EntityState, Scenario, SimEvent, SimulationProvider};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// Fuel burn rate: 0.5 = 50% per second (simplified model for demo).
+// Note: simulation uses 0.5, logistics uses 0.3, platform uses 0.3.
+// These are intentionally different to demonstrate trait polymorphism
+// across crate boundaries. In production, a shared SDK type would
+// standardise fuel consumption modelling.
+
 /// A minimal drone simulator that patrols a route and burns fuel.
 struct PatrolDrone {
     handle: Option<ModuleHandle>,
@@ -21,14 +32,14 @@ struct PatrolDrone {
 
 impl PatrolDrone {
     fn new() -> Self {
-        Self { handle: None, fuel_liters: 100.0, position: (48.85, 2.35, 500.0), tick_count: 0 }
+        Self { handle: None, fuel_liters: 100.0, position: (DEMO_LAT, DEMO_LON, 500.0), tick_count: 0 }
     }
 }
 
 impl SimulationProvider for PatrolDrone {
     fn init(&mut self, scenario: &Scenario, handle: &ModuleHandle) {
         self.handle = Some(ModuleHandle::new_test(handle.module_id));
-        self.handle.as_ref().unwrap().log(LogLevel::Info, &format!("DroneSim: scenario '{}' loaded", scenario.name));
+        self.handle.as_ref().expect("init must be called before tick").log(LogLevel::Info, &format!("DroneSim: scenario '{}' loaded", scenario.name));
     }
 
     fn tick(&mut self, dt: Duration) -> Vec<SimEvent> {
@@ -83,7 +94,7 @@ fn main() {
     let scenario = Scenario {
         id: "scenario-001".into(),
         name: "Drone Patrol Alpha".into(),
-        duration_secs: 3600,
+        duration_secs: DEMO_DURATION_SECS,
         order_of_battle: serde_json::json!({"drones": ["drone-001"]}),
         timeline: vec![],
         environment: serde_json::json!({"wind_kph": 15}),
@@ -116,7 +127,7 @@ mod tests {
             environment: serde_json::json!({}),
         };
         drone.init(&scenario, &ModuleHandle::new_test(Uuid::new_v4()));
-        let state = drone.entity_state("drone-001").unwrap();
+        let state = drone.entity_state("drone-001").expect("drone-001 should be registered");
         assert_eq!(state.entity_id, "drone-001");
         assert_eq!(state.status, "patrolling");
     }

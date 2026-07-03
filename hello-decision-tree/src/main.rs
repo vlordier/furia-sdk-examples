@@ -9,6 +9,11 @@ use std::collections::HashMap;
 use furia_sdk::decision_tree::{DecisionTree, DecisionTreeProvider, TrainingExample};
 use serde_json::Value;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// A single-threshold classifier trained on labelled examples.
 struct ThresholdTree {
     threshold: f32,
@@ -65,13 +70,13 @@ fn main() {
     ];
 
     println!("=== Decision Tree ===");
-    let trained = tree.train(&examples).unwrap();
-    println!(" Trained tree: {}", serde_json::to_string_pretty(&trained.inner).unwrap());
+    let trained = tree.train(&examples).expect("training with valid examples should succeed");
+    println!(" Trained tree: {}", serde_json::to_string_pretty(&trained.inner).expect("trained tree should serialize to JSON"));
 
-    let high = tree.evaluate(&trained, &HashMap::from([("rssi".into(), 0.85)])).unwrap();
+    let high = tree.evaluate(&trained, &HashMap::from([("rssi".into(), 0.85)])).expect("evaluation of high RSSI should succeed");
     println!(" High RSSI -> {}", high);
 
-    let low = tree.evaluate(&trained, &HashMap::from([("rssi".into(), 0.05)])).unwrap();
+    let low = tree.evaluate(&trained, &HashMap::from([("rssi".into(), 0.05)])).expect("evaluation of low RSSI should succeed");
     println!(" Low RSSI  -> {}", low);
 }
 

@@ -8,6 +8,11 @@ use furia_sdk::export::{ExportAdapter, ExportEntity, ExportError, ExportFormat};
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// An export adapter that serialises entities to pretty-printed JSON.
 struct JsonExportAdapter;
 
@@ -32,8 +37,8 @@ fn main() {
         entity_type: "track".into(),
         entity_id: "threat-t72-001".into(),
         attributes: serde_json::json!({
-            "latitude": 48.85,
-            "longitude": 2.35,
+            "latitude": DEMO_LAT,
+            "longitude": DEMO_LON,
             "altitude": 0.0,
             "classification": "hostile",
             "confidence": 0.95,
@@ -42,7 +47,7 @@ fn main() {
     };
 
     println!("=== Export ===");
-    let json = exporter.export(&entity, &ExportFormat::Custom("json".into()), &handle).unwrap();
+    let json = exporter.export(&entity, &ExportFormat::Custom("json".into()), &handle).expect("export should succeed for valid entity");
     println!("{}", String::from_utf8_lossy(&json));
 
     println!("\nSupported formats: {:?}", exporter.supported_formats());

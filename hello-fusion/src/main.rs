@@ -8,6 +8,16 @@ use furia_sdk::fusion::{CorrelationType, FusionEngine, FusionError, TrackCorrela
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// ── Confidence constants ────────────────────────────────────────
+const HIGH_CONFIDENCE: f64 = 0.85;
+const MEDIUM_CONFIDENCE: f64 = 0.7;
+const LOW_CONFIDENCE: f64 = 0.5;
+
 /// A proximity-based fusion engine using distance and heading heuristics.
 struct ProximityFusion;
 
@@ -26,7 +36,7 @@ impl FusionEngine for ProximityFusion {
                 let ct = if prefix_a == prefix_b { CorrelationType::SameEntity } else { CorrelationType::Unrelated };
                 results.push(TrackCorrelation {
                     track_ids: vec![a.clone(), b.clone()],
-                    confidence: if ct == CorrelationType::SameEntity { 0.85 } else { 0.1 },
+                    confidence: if ct == CorrelationType::SameEntity { HIGH_CONFIDENCE } else { 0.1 },
                     correlation_type: ct,
                     rationale: format!("prefix match: {} vs {}", prefix_a, prefix_b),
                 });
@@ -44,13 +54,13 @@ fn main() {
 
     println!("=== Track Fusion ===");
     // Same entity — both start with "radar"
-    let correlated = fusion.correlate(&["radar-track-1".into(), "radar-track-2".into()], &handle).unwrap();
+    let correlated = fusion.correlate(&["radar-track-1".into(), "radar-track-2".into()], &handle).expect("correlation should succeed for valid tracks");
     for c in &correlated {
         println!(" {:?} — ids={:?} conf={:.2}", c.correlation_type, c.track_ids, c.confidence);
     }
 
     // Unrelated — different prefixes
-    let unrelated = fusion.correlate(&["radar-1".into(), "esm-1".into()], &handle).unwrap();
+    let unrelated = fusion.correlate(&["radar-1".into(), "esm-1".into()], &handle).expect("correlation should succeed for unrelated tracks");
     for c in &unrelated {
         println!(" {:?} — ids={:?} conf={:.2}", c.correlation_type, c.track_ids, c.confidence);
     }

@@ -7,6 +7,16 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::sensor::{AdapterError, SensorAdapter, TrackClassification, TrackIngest};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// ── Confidence constants ────────────────────────────────────────
+const HIGH_CONFIDENCE: f64 = 0.85;
+const MEDIUM_CONFIDENCE: f64 = 0.7;
+const LOW_CONFIDENCE: f64 = 0.5;
+
 /// A radar sensor adapter that parses CSV payloads and classifies tracks.
 struct RadarAdapter {
     classification_rules: Vec<(&'static str, &'static str)>,
@@ -48,13 +58,13 @@ impl SensorAdapter for RadarAdapter {
                 return Ok(TrackClassification {
                     track_id: track.track_id.clone(),
                     classification: classification.to_string(),
-                    sub_classification: None, confidence: 0.85,
+                    sub_classification: None, confidence: HIGH_CONFIDENCE as f32,
                 });
             }
         }
         Ok(TrackClassification {
             track_id: track.track_id.clone(),
-            classification: "friendly".into(), sub_classification: None, confidence: 0.7,
+            classification: "friendly".into(), sub_classification: None, confidence: MEDIUM_CONFIDENCE as f32,
         })
     }
 
@@ -64,12 +74,12 @@ impl SensorAdapter for RadarAdapter {
 fn main() {
     let radar = RadarAdapter::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let csv = b"tank-001,48.85,2.35,150\ntruck-001,48.86,2.36,0\n";
+    let csv = format!("tank-001,{:.2},{:.2},150\ntruck-001,48.86,2.36,0\n", DEMO_LAT, DEMO_LON);
 
     println!("=== Radar Ingest ===");
-    let tracks = radar.ingest(csv, &handle).unwrap();
+    let tracks = radar.ingest(csv.as_bytes(), &handle).expect("radar ingest should parse valid CSV");
     for t in &tracks {
-        let cls = radar.classify(t, &handle).unwrap();
+        let cls = radar.classify(t, &handle).expect("classification should succeed for valid track");
         println!(" {} @ ({:.4}, {:.4}) → {}", t.track_id, t.latitude, t.longitude, cls.classification);
     }
 }

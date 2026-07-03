@@ -13,6 +13,17 @@ use furia_sdk::simulation::{Scenario, SimulationProvider};
 
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// Fuel burn rate: 0.3 = 30% per hour (simplified model for demo).
+// Note: platform uses 0.3, simulation uses 0.5, logistics uses 0.3.
+// These are intentionally different to demonstrate trait polymorphism
+// across crate boundaries. In production, a shared SDK type would
+// standardise fuel consumption modelling.
+
 /// A registry that holds providers and exposes common lifecycle operations.
 struct ProviderRegistry {
     scenario: Scenario,
@@ -73,7 +84,7 @@ impl SimulationProvider for Jammer {
 
 fn main() {
     let scenario = Scenario {
-        id: "platform-demo".into(), name: "Platform Demo".into(), duration_secs: 3600,
+        id: "platform-demo".into(), name: "Platform Demo".into(), duration_secs: DEMO_DURATION_SECS,
         order_of_battle: serde_json::json!({"uavs": ["drone-001"]}),
         timeline: vec![],
         environment: serde_json::json!({"wind_kph": 10}),
@@ -132,7 +143,7 @@ mod tests {
         for _ in 0..10 {
             reg.tick_all(Duration::from_secs(60));
         }
-        match reg.health_of("drone").unwrap() {
+        match reg.health_of("drone").expect("drone should be registered") {
             ModuleHealth::Degraded { .. } => {} // expected
             _ => panic!("expected degraded after many ticks"),
         }

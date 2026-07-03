@@ -8,6 +8,11 @@ use furia_sdk::intent::{CommanderIntent, IntentParseError, IntentProvider};
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// A simple keyword-based intent parser.
 struct TextIntentParser;
 

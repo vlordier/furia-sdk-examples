@@ -11,6 +11,11 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::{Scenario, SimEvent};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// A Gaussian plume dispersion simulator.
 struct GaussianPlume {
     releases: Vec<CbrnRelease>,
@@ -83,13 +88,13 @@ impl CbrnProvider for GaussianPlume {
 fn main() {
     let mut cbrn = GaussianPlume::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let scenario = Scenario { id: "cbrn".into(), name: "CBRN Demo".into(), duration_secs: 3600, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({"wind_dir_deg": 270, "wind_speed_kph": 15}) };
+    let scenario = Scenario { id: "cbrn".into(), name: "CBRN Demo".into(), duration_secs: DEMO_DURATION_SECS, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({"wind_dir_deg": 270, "wind_speed_kph": 15}) };
     cbrn.init(&scenario, &handle);
 
     println!("=== CBRN Dispersion ===");
     let _ev = cbrn.release_agent(CbrnRelease {
         release_id: "rel-001".into(), agent_type: "sarin".into(),
-        lat: 48.85, lon: 2.35, altitude_m: 10.0, mass_kg: 50.0, time_utc_ms: 0,
+        lat: DEMO_LAT, lon: DEMO_LON, altitude_m: 10.0, mass_kg: 50.0, time_utc_ms: 0,
     });
     cbrn.tick_dispersion(Duration::from_secs(300));
 
@@ -112,7 +117,7 @@ mod tests {
     #[test]
     fn test_hazard_at_nearby_returns_level() {
         let mut c = GaussianPlume::new();
-        c.release_agent(CbrnRelease { release_id: "r1".into(), agent_type: "gas".into(), lat: 48.85, lon: 2.35, altitude_m: 0.0, mass_kg: 10.0, time_utc_ms: 0 });
+        c.release_agent(CbrnRelease { release_id: "r1".into(), agent_type: "gas".into(), lat: DEMO_LAT, lon: DEMO_LON, altitude_m: 0.0, mass_kg: 10.0, time_utc_ms: 0 });
         assert_eq!(c.hazard_at(48.86, 2.36), Some(CbrnHazardLevel::ImmediateDanger));
     }
 

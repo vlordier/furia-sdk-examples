@@ -8,6 +8,11 @@
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::ui::{UiPlugin, UiPluginMetadata, UiPluginOutput, UiPluginProps};
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// A custom panel that shows an asset status summary.
 struct AssetStatusPanel;
 
@@ -43,7 +48,7 @@ fn main() {
     println!(" Slot: {} (min: {}x{})", meta.preferred_slot, meta.min_dimensions.0, meta.min_dimensions.1);
 
     let props = UiPluginProps {
-        map_viewport: serde_json::json!({"zoom": 12, "center": [48.85, 2.35]}),
+        map_viewport: serde_json::json!({"zoom": 12, "center": [DEMO_LAT, DEMO_LON]}),
         selected_entity: Some(serde_json::json!({"entity_id": "drone-001", "type": "UAV"})),
         operator_role: "pilot".into(),
         screen_dimensions: (1920, 1080),

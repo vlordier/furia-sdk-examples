@@ -11,6 +11,11 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::{Scenario, SimEvent};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// A passive sonar simulator that detects a submerged contact.
 struct PassiveSonar {
     configs: Vec<SonarConfig>,
@@ -77,7 +82,7 @@ fn main() {
     });
     sonar.tick_acoustics(Duration::from_secs(30));
 
-    let prop = sonar.propagation_conditions(48.85, 2.35, 100.0);
+    let prop = sonar.propagation_conditions(DEMO_LAT, DEMO_LON, 100.0);
     println!(" Propagation loss at 100m: {:.1} dB", prop.transmission_loss_db);
     for d in sonar.sonar_detections() {
         println!(" Detection: {} ({}) conf={:.2}", d.contact_id, d.classification, d.confidence);

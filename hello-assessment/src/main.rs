@@ -9,6 +9,11 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::SimEvent;
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
 /// A simple BDA engine that checks for impact proximity indicators.
 struct StrikeAssessor;
 
@@ -58,7 +63,7 @@ fn main() {
     ];
 
     println!("=== Battle Damage Assessment ===");
-    let bda = assessor.assess("strike-001", &events, &handle).unwrap();
+    let bda = assessor.assess("strike-001", &events, &handle).expect("BDA assessment should succeed with valid events");
     println!(" Status: {} (confidence {:.2})", bda.target_status, bda.confidence);
     println!(" Collateral reported: {:?}", bda.collateral_reported);
     println!(" Remarks: {}", bda.remarks);

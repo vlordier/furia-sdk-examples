@@ -9,6 +9,16 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::sensor::{AdapterError, TrackIngest};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// ── Confidence constants ────────────────────────────────────────
+const HIGH_CONFIDENCE: f64 = 0.85;
+const MEDIUM_CONFIDENCE: f64 = 0.7;
+const LOW_CONFIDENCE: f64 = 0.5;
+
 /// A mock dispatch adapter simulating a weapon release.
 struct WeaponDispatch;
 
@@ -39,7 +49,7 @@ fn main() {
     let handle = ModuleHandle::new_test(Uuid::new_v4());
 
     let target = TrackIngest {
-        track_id: "threat-t72".into(), latitude: 48.85, longitude: 2.35,
+        track_id: "threat-t72".into(), latitude: DEMO_LAT, longitude: DEMO_LON,
         altitude: Some(0.0), velocity: Some(10.0), heading: Some(45.0),
         classification: Some("hostile".into()), confidence: 0.9, sensor_type: "radar".into(),
     };
@@ -53,7 +63,7 @@ fn main() {
     };
 
     println!("=== Dispatch ===");
-    let receipt = dispatch.dispatch(&action, &handle).unwrap();
+    let receipt = dispatch.dispatch(&action, &handle).expect("dispatch should return a receipt for valid action");
     println!(" Receipt: ack={}, time={}", receipt.ack_status, receipt.timestamp);
 }
 

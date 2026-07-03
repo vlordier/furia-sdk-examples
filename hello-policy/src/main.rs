@@ -9,6 +9,16 @@ use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::policy::{PolicyConstraint, PolicyContext, PolicyDecision, PolicyError, PolicyProvider};
 use uuid::Uuid;
 
+// ── Demo constants ──────────────────────────────────────────────
+const DEMO_LAT: f64 = 48.85;
+const DEMO_LON: f64 = 2.35;
+const DEMO_DURATION_SECS: u64 = 3600;
+
+// ── Confidence constants ────────────────────────────────────────
+const HIGH_CONFIDENCE: f64 = 0.85;
+const MEDIUM_CONFIDENCE: f64 = 0.7;
+const LOW_CONFIDENCE: f64 = 0.5;
+
 /// A rules-based policy provider enforcing basic IHL principles.
 struct CivilianProtectionPolicy;
 
@@ -22,7 +32,7 @@ impl PolicyProvider for CivilianProtectionPolicy {
             });
         }
         // Confirmed threat with high enough confidence
-        if ctx.target_id.starts_with("threat-") && ctx.target_confidence >= 0.8 {
+        if ctx.target_id.starts_with("threat-") && ctx.target_confidence >= HIGH_CONFIDENCE as f32 {
             return Ok(PolicyDecision::Allow);
         }
         // Marginal cases escalate
@@ -36,7 +46,7 @@ impl PolicyProvider for CivilianProtectionPolicy {
         vec![PolicyConstraint {
             zone: Some("no-strike-zone-A".into()),
             max_collateral_risk: Some(0.1),
-            min_confidence: Some(0.85),
+            min_confidence: Some(HIGH_CONFIDENCE as f32),
         }]
     }
 
@@ -78,7 +88,7 @@ mod tests {
             target_confidence: 0.9, collateral_risk_score: 0.0,
             operator_role: "pilot".into(), mission_id: "m-001".into(),
         };
-        let r = p.evaluate(&ctx, &h).unwrap();
+        let r = p.evaluate(&ctx, &h).expect("policy evaluation should succeed");
         assert_eq!(r, PolicyDecision::Deny { reason: "civilian target — violates Distinction".into(), ihl_articles: vec!["API 51".into(), "API 52".into()] });
     }
 
