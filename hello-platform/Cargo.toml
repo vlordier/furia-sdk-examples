@@ -6,7 +6,6 @@ description = "Hello World: composing providers into a platform using ProviderRe
 
 [dependencies]
 furia-sdk.workspace = true
-serde.workspace = true
 serde_json.workspace = true
 uuid.workspace = true
 [lints]

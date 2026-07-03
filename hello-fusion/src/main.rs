@@ -8,11 +8,6 @@ use furia_sdk::fusion::{CorrelationType, FusionEngine, FusionError, TrackCorrela
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use uuid::Uuid;
 
-// ── Demo constants ──────────────────────────────────────────────
-const DEMO_LAT: f64 = 48.85;
-const DEMO_LON: f64 = 2.35;
-const DEMO_DURATION_SECS: u64 = 3600;
-
 // ── Confidence constants ────────────────────────────────────────
 const HIGH_CONFIDENCE: f64 = 0.85;
 const MEDIUM_CONFIDENCE: f64 = 0.7;

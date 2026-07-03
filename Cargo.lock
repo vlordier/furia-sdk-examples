@@ -117,7 +117,6 @@ name = "hello-acoustic"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -127,7 +126,6 @@ name = "hello-assessment"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -137,7 +135,6 @@ name = "hello-cbrn"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -147,7 +144,6 @@ name = "hello-civilian"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -157,9 +153,7 @@ name = "hello-decision-tree"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
- "uuid",
 ]
 
 [[package]]
@@ -167,7 +161,6 @@ name = "hello-decomposition"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -178,7 +171,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -188,7 +180,6 @@ name = "hello-ew"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -198,7 +189,6 @@ name = "hello-export"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -208,8 +198,6 @@ name = "hello-fusion"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
- "serde_json",
  "uuid",
 ]
 
@@ -218,8 +206,6 @@ name = "hello-intent"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
- "serde_json",
  "uuid",
 ]
 
@@ -228,7 +214,6 @@ name = "hello-logistics"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -246,7 +231,6 @@ name = "hello-platform"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -256,8 +240,6 @@ name = "hello-policy"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
- "serde_json",
  "uuid",
 ]
 
@@ -266,8 +248,6 @@ name = "hello-sensor"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
- "serde_json",
  "uuid",
 ]
 
@@ -276,7 +256,6 @@ name = "hello-simulation"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -286,7 +265,6 @@ name = "hello-terrain"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]
@@ -296,7 +274,6 @@ name = "hello-ui"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
  "serde_json",
  "uuid",
 ]

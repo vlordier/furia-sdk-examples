@@ -6,7 +6,6 @@ description = "Hello World: implementing UiPlugin — custom panel metadata"
 
 [dependencies]
 furia-sdk.workspace = true
-serde.workspace = true
 serde_json.workspace = true
 uuid.workspace = true
 [lints]
