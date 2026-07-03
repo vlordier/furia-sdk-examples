@@ -1,12 +1,18 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  build:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
+          components: clippy
       - run: cargo check --workspace
+      - run: cargo clippy --workspace -- -D warnings
       - run: cargo test --workspace
+      - name: cargo-deny
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check advisories
