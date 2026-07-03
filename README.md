@@ -33,7 +33,7 @@ cargo test --workspace
 | `hello-fusion` | FusionEngine | Sensor fusion |
 | `hello-intent` | IntentParser | Natural language intent |
 | `hello-logistics` | LogisticsProvider | Logistics planning |
-| `hello-nato-coalition` | CoalitionProvider | NATO coalition ops |
+| `hello-nato-coalition` | (SDK pattern) | NATO coalition ops (SDK example) |
 | `hello-platform` | PlatformProvider | Platform management |
 | `hello-policy` | PolicyProvider | IHL/ROE policy |
 | `hello-sensor` | SensorAdapter | Generic sensor |

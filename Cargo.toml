@@ -6,8 +6,8 @@ members = ["hello-*"]
 version = "0.1.0"
 edition = "2021"
 
-[workspace.lints]
-unsafe_code = "forbid"
+[workspace.lints.rust]
+unsafe_code = { level = "forbid" }
 
 [workspace.dependencies]
 furia-sdk = { git = "https://github.com/vlordier/furia-core.git", tag = "v0.1.0" }

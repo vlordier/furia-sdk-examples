@@ -13,7 +13,7 @@ struct TextIntentParser;
 
 impl IntentProvider for TextIntentParser {
     fn parse_intent(&self, input: &str, _handle: &ModuleHandle) -> Result<CommanderIntent, IntentParseError> {
-        let parts: Vec<&str> = input.split(|c| c == ' ' || c == ',').filter(|s| !s.is_empty()).collect();
+        let parts: Vec<&str> = input.split([' ', ',']).filter(|s| !s.is_empty()).collect();
         let objective = if input.to_lowercase().contains("destroy") {
             "destroy".into()
         } else if input.to_lowercase().contains("recon") {
