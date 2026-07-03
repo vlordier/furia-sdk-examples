@@ -2,8 +2,8 @@
 //! Demonstrates a basic coalition-aware provider stub using available SDK types.
 //!
 //! Note: Full NATO types (Nation, MarkingProfile, NationalCaveat) are defined
-//! in durandal-furia-control (product repo). This example shows the pattern
-//! for a coalition-aware module using furia-sdk.
+//! in the furia-sdk crate. This example shows the pattern for a coalition-aware
+//! module using furia-sdk.
 
 use furia_sdk::module_handle::{ModuleHandle, SecurityContext, ClearanceLevel, ModuleHealth, LogLevel};
 use uuid::Uuid;

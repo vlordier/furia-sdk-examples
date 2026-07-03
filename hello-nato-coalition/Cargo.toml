@@ -6,8 +6,6 @@ description = "Example: NATO coalition operations pattern — module lifecycle a
 
 [dependencies]
 furia-sdk.workspace = true
-serde.workspace = true
-serde_json.workspace = true
 uuid.workspace = true
 
 [lints]

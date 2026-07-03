@@ -238,8 +238,6 @@ name = "hello-nato-coalition"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
- "serde",
- "serde_json",
  "uuid",
 ]
 
