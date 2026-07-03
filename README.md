@@ -5,9 +5,6 @@ Example implementations of every Furia SDK trait — reference patterns for C2 p
 ## Quickstart
 
 ```bash
-# List all examples
-cargo build --workspace 2>&1 | grep "Compiling hello-" | head -20
-
 # Run a specific example
 cargo run -p hello-decomposition
 cargo run -p hello-policy
@@ -33,7 +30,7 @@ cargo test --workspace
 | `hello-fusion` | FusionEngine | Sensor fusion |
 | `hello-intent` | IntentParser | Natural language intent |
 | `hello-logistics` | LogisticsProvider | Logistics planning |
-| `hello-nato-coalition` | (SDK pattern) | NATO coalition ops (SDK example) |
+| `hello-nato-coalition` | (SDK pattern) | Module lifecycle and audit |
 | `hello-platform` | PlatformProvider | Platform management |
 | `hello-policy` | PolicyProvider | IHL/ROE policy |
 | `hello-sensor` | SensorAdapter | Generic sensor |

@@ -5,6 +5,7 @@ members = ["hello-*"]
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.75"
 
 [workspace.lints.rust]
 unsafe_code = { level = "forbid" }
@@ -13,5 +14,4 @@ unsafe_code = { level = "forbid" }
 furia-sdk = { git = "https://github.com/vlordier/furia-core.git", tag = "v0.1.0" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.0", features = ["v4"] }

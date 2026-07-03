@@ -32,3 +32,15 @@ fn main() {
     println!("implement multi-nation types (Nation, MarkingProfile, NationalCaveat)");
     println!("in a shared crate (furia-core) for full coalition C2.");
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use uuid::Uuid;
+
+    #[test]
+    fn test_can_create_handle() {
+        let handle = ModuleHandle::new_test(Uuid::new_v4());
+        assert!(!handle.module_id.is_nil());
+    }
+}

@@ -116,7 +116,6 @@ dependencies = [
 name = "hello-acoustic"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -127,7 +126,6 @@ dependencies = [
 name = "hello-assessment"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -138,7 +136,6 @@ dependencies = [
 name = "hello-cbrn"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -149,7 +146,6 @@ dependencies = [
 name = "hello-civilian"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -160,7 +156,6 @@ dependencies = [
 name = "hello-decision-tree"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -171,7 +166,6 @@ dependencies = [
 name = "hello-decomposition"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -193,7 +187,6 @@ dependencies = [
 name = "hello-ew"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -204,7 +197,6 @@ dependencies = [
 name = "hello-export"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -215,7 +207,6 @@ dependencies = [
 name = "hello-fusion"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -226,7 +217,6 @@ dependencies = [
 name = "hello-intent"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -237,7 +227,6 @@ dependencies = [
 name = "hello-logistics"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -258,7 +247,6 @@ dependencies = [
 name = "hello-platform"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -269,7 +257,6 @@ dependencies = [
 name = "hello-policy"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -280,7 +267,6 @@ dependencies = [
 name = "hello-sensor"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -291,7 +277,6 @@ dependencies = [
 name = "hello-simulation"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -302,7 +287,6 @@ dependencies = [
 name = "hello-terrain"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
@@ -313,7 +297,6 @@ dependencies = [
 name = "hello-ui"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "furia-sdk",
  "serde",
  "serde_json",
