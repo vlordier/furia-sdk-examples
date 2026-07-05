@@ -1,51 +1,80 @@
 //! Hello NATO/France Coalition example.
-//! Demonstrates a basic coalition-aware provider stub using available SDK types.
 //!
-//! Note: Full NATO types (Nation, MarkingProfile, NationalCaveat) are defined
-//! in the furia-sdk crate. This example shows the pattern for a coalition-aware
-//! module using furia-sdk.
+//! Demonstrates coalition-labelled module lifecycle and audit using the
+//! security/context types available in `furia-sdk` v0.1.0. Shared NATO domain
+//! types are intentionally not imported because they are not in that git tag.
 
-use furia_sdk::module_handle::{ModuleHandle, SecurityContext, ClearanceLevel, ModuleHealth, LogLevel};
+use furia_sdk::module_handle::{
+    ClearanceLevel, LogLevel, ModuleHandle, ModuleHealth, SecurityContext,
+};
 use uuid::Uuid;
 
-// ── Demo constants ──────────────────────────────────────────────
-const DEMO_LAT: f64 = 48.85;
-const DEMO_LON: f64 = 2.35;
-const DEMO_DURATION_SECS: u64 = 3600;
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct CoalitionLabel {
+    originator: &'static str,
+    releasability: &'static str,
+    caveat: &'static str,
+}
+
+impl CoalitionLabel {
+    fn display(&self) -> String {
+        format!(
+            "{} / {} / {}",
+            self.originator, self.releasability, self.caveat
+        )
+    }
+}
 
 fn main() {
-    println!("Furia NATO Coalition Hello (SDK example)");
+    println!("Furia NATO Coalition Hello (SDK v0.1.0 lifecycle demo)");
 
-    // Demonstrate ModuleHandle with a security context
     let ctx = SecurityContext {
         user_id: "fr-officer-01".into(),
         role: "commander".into(),
         session_id: "coalition-ex-42".into(),
         clearance: ClearanceLevel::Secret,
     };
-    println!("Security context: {} / {} / {:?}",
-        ctx.user_id, ctx.role, ctx.clearance);
+    let label = CoalitionLabel {
+        originator: "FR",
+        releasability: "REL FR/UA",
+        caveat: "DGA autonomy<=L3",
+    };
 
     let handle = ModuleHandle::new_test(Uuid::new_v4());
     handle.log(LogLevel::Info, "hello-nato-coalition initialized");
     handle.health_report(ModuleHealth::Healthy);
-    handle.audit("module.init", "hello-nato-coalition");
+    handle.audit("coalition.label", &label.display());
 
+    println!(
+        "Operator: {} / {} / {:?}",
+        ctx.user_id, ctx.role, ctx.clearance
+    );
+    println!("Coalition label: {}", label.display());
     println!("Module initialized with id: {}", handle.module_id);
-    println!();
-    println!("To extend: add CoalitionProvider trait to furia-sdk and");
-    println!("implement multi-nation types (Nation, MarkingProfile, NationalCaveat)");
-    println!("in a shared crate (furia-core) for full coalition C2.");
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use uuid::Uuid;
 
     #[test]
-    fn test_can_create_handle() {
-        let handle = ModuleHandle::new_test(Uuid::new_v4());
-        assert!(!handle.module_id.is_nil());
+    fn coalition_label_display_is_stable() {
+        let label = CoalitionLabel {
+            originator: "FR",
+            releasability: "REL FR/UA",
+            caveat: "DGA autonomy<=L3",
+        };
+        assert_eq!(label.display(), "FR / REL FR/UA / DGA autonomy<=L3");
+    }
+
+    #[test]
+    fn sdk_security_context_is_available() {
+        let ctx = SecurityContext {
+            user_id: "fr-officer-01".into(),
+            role: "commander".into(),
+            session_id: "coalition-ex-42".into(),
+            clearance: ClearanceLevel::Secret,
+        };
+        assert_eq!(ctx.role, "commander");
     }
 }

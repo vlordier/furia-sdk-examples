@@ -32,10 +32,18 @@ struct ProviderRegistry {
 
 impl ProviderRegistry {
     fn new(scenario: Scenario) -> Self {
-        Self { scenario, sim_providers: vec![] }
+        Self {
+            scenario,
+            sim_providers: vec![],
+        }
     }
 
-    fn register_simulation(&mut self, name: &str, provider: Box<dyn SimulationProvider>, handle: &ModuleHandle) {
+    fn register_simulation(
+        &mut self,
+        name: &str,
+        provider: Box<dyn SimulationProvider>,
+        handle: &ModuleHandle,
+    ) {
         let mut prov = provider;
         prov.init(&self.scenario, handle);
         self.sim_providers.push((name.to_string(), prov));
@@ -49,7 +57,10 @@ impl ProviderRegistry {
     }
 
     fn health_of(&self, name: &str) -> Option<ModuleHealth> {
-        self.sim_providers.iter().find(|(n, _)| n == name).map(|(_, p)| p.health())
+        self.sim_providers
+            .iter()
+            .find(|(n, _)| n == name)
+            .map(|(_, p)| p.health())
     }
 }
 
@@ -59,14 +70,24 @@ struct Drone {
 }
 
 impl SimulationProvider for Drone {
-    fn init(&mut self, _scenario: &Scenario, _handle: &ModuleHandle) { self.fuel = 100.0; }
+    fn init(&mut self, _scenario: &Scenario, _handle: &ModuleHandle) {
+        self.fuel = 100.0;
+    }
     fn tick(&mut self, dt: Duration) -> Vec<furia_sdk::simulation::SimEvent> {
         self.fuel -= 0.3 * dt.as_secs_f64();
         vec![]
     }
-    fn entity_state(&self, _id: &str) -> Option<furia_sdk::simulation::EntityState> { None }
+    fn entity_state(&self, _id: &str) -> Option<furia_sdk::simulation::EntityState> {
+        None
+    }
     fn health(&self) -> ModuleHealth {
-        if self.fuel > 20.0 { ModuleHealth::Healthy } else { ModuleHealth::Degraded { reason: "low fuel".into() } }
+        if self.fuel > 20.0 {
+            ModuleHealth::Healthy
+        } else {
+            ModuleHealth::Degraded {
+                reason: "low fuel".into(),
+            }
+        }
     }
 }
 
@@ -76,15 +97,25 @@ struct Jammer {
 }
 
 impl SimulationProvider for Jammer {
-    fn init(&mut self, _scenario: &Scenario, _handle: &ModuleHandle) { self.active = true; }
-    fn tick(&mut self, _dt: Duration) -> Vec<furia_sdk::simulation::SimEvent> { vec![] }
-    fn entity_state(&self, _id: &str) -> Option<furia_sdk::simulation::EntityState> { None }
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn init(&mut self, _scenario: &Scenario, _handle: &ModuleHandle) {
+        self.active = true;
+    }
+    fn tick(&mut self, _dt: Duration) -> Vec<furia_sdk::simulation::SimEvent> {
+        vec![]
+    }
+    fn entity_state(&self, _id: &str) -> Option<furia_sdk::simulation::EntityState> {
+        None
+    }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
     let scenario = Scenario {
-        id: "platform-demo".into(), name: "Platform Demo".into(), duration_secs: DEMO_DURATION_SECS,
+        id: "platform-demo".into(),
+        name: "Platform Demo".into(),
+        duration_secs: DEMO_DURATION_SECS,
         order_of_battle: serde_json::json!({"uavs": ["drone-001"]}),
         timeline: vec![],
         environment: serde_json::json!({"wind_kph": 10}),
@@ -117,7 +148,14 @@ mod tests {
 
     #[test]
     fn test_registry_can_register_providers() {
-        let scenario = Scenario { id: "t".into(), name: "t".into(), duration_secs: 60, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+        let scenario = Scenario {
+            id: "t".into(),
+            name: "t".into(),
+            duration_secs: 60,
+            order_of_battle: serde_json::json!({}),
+            timeline: vec![],
+            environment: serde_json::json!({}),
+        };
         let mut reg = ProviderRegistry::new(scenario);
         let handle = ModuleHandle::new_test(Uuid::new_v4());
         reg.register_simulation("drone", Box::new(Drone { fuel: 0.0 }), &handle);
@@ -126,7 +164,14 @@ mod tests {
 
     #[test]
     fn test_tick_all_does_not_panic() {
-        let scenario = Scenario { id: "t".into(), name: "t".into(), duration_secs: 60, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+        let scenario = Scenario {
+            id: "t".into(),
+            name: "t".into(),
+            duration_secs: 60,
+            order_of_battle: serde_json::json!({}),
+            timeline: vec![],
+            environment: serde_json::json!({}),
+        };
         let mut reg = ProviderRegistry::new(scenario);
         let handle = ModuleHandle::new_test(Uuid::new_v4());
         reg.register_simulation("drone", Box::new(Drone { fuel: 100.0 }), &handle);
@@ -135,7 +180,14 @@ mod tests {
 
     #[test]
     fn test_health_degraded_after_many_ticks() {
-        let scenario = Scenario { id: "t".into(), name: "t".into(), duration_secs: 60, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+        let scenario = Scenario {
+            id: "t".into(),
+            name: "t".into(),
+            duration_secs: 60,
+            order_of_battle: serde_json::json!({}),
+            timeline: vec![],
+            environment: serde_json::json!({}),
+        };
         let mut reg = ProviderRegistry::new(scenario);
         let handle = ModuleHandle::new_test(Uuid::new_v4());
         reg.register_simulation("drone", Box::new(Drone { fuel: 100.0 }), &handle);
@@ -143,9 +195,9 @@ mod tests {
         for _ in 0..10 {
             reg.tick_all(Duration::from_secs(60));
         }
-        match reg.health_of("drone").expect("drone should be registered") {
-            ModuleHealth::Degraded { .. } => {} // expected
-            _ => panic!("expected degraded after many ticks"),
-        }
+        assert!(matches!(
+            reg.health_of("drone").expect("drone should be registered"),
+            ModuleHealth::Degraded { .. }
+        ));
     }
 }

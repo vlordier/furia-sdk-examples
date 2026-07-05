@@ -17,7 +17,11 @@ const DEMO_DURATION_SECS: u64 = 3600;
 struct TextIntentParser;
 
 impl IntentProvider for TextIntentParser {
-    fn parse_intent(&self, input: &str, _handle: &ModuleHandle) -> Result<CommanderIntent, IntentParseError> {
+    fn parse_intent(
+        &self,
+        input: &str,
+        _handle: &ModuleHandle,
+    ) -> Result<CommanderIntent, IntentParseError> {
         let parts: Vec<&str> = input.split([' ', ',']).filter(|s| !s.is_empty()).collect();
         let objective = if input.to_lowercase().contains("destroy") {
             "destroy".into()
@@ -35,7 +39,9 @@ impl IntentProvider for TextIntentParser {
             constraints.push("time_constrained".into());
         }
 
-        let target: Option<String> = parts.iter().position(|&p| p.eq_ignore_ascii_case("at"))
+        let target: Option<String> = parts
+            .iter()
+            .position(|&p| p.eq_ignore_ascii_case("at"))
             .and_then(|i| parts.get(i + 1))
             .map(|s| s.to_string());
 
@@ -47,7 +53,9 @@ impl IntentProvider for TextIntentParser {
         })
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
@@ -55,12 +63,15 @@ fn main() {
     let handle = ModuleHandle::new_test(Uuid::new_v4());
 
     let inputs = vec![
-        "destroy T72 at grid-48-85, collateral minimal",
-        "recon route to bravo, NLT 1400Z",
+        format!(
+            "destroy T72 at {:.2},{:.2}, collateral minimal",
+            DEMO_LAT, DEMO_LON
+        ),
+        format!("recon route to bravo, NLT {} seconds", DEMO_DURATION_SECS),
     ];
     println!("=== Intent Parsing ===");
     for input in inputs {
-        match parser.parse_intent(input, &handle) {
+        match parser.parse_intent(&input, &handle) {
             Ok(_intent) => println!("\n Input: \"{}\"", input),
             Err(e) => println!(" Error: {}", e),
         }
@@ -91,7 +102,9 @@ mod tests {
     fn test_collateral_constraint_detected() {
         let p = TextIntentParser;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let intent = p.parse_intent("destroy tank, collateral minimal", &h).unwrap();
+        let intent = p
+            .parse_intent("destroy tank, collateral minimal", &h)
+            .unwrap();
         assert!(intent.constraints.contains(&"no_collateral_damage".into()));
     }
 }
