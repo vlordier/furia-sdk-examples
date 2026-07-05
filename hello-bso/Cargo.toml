@@ -1,0 +1,13 @@
+[package]
+name = "hello-bso"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: BattlespaceObject — the authoritative COP track type (STANAG 4255 / APP-6)"
+
+[dependencies]
+furia-sdk.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true
