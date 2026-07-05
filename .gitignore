@@ -2,3 +2,10 @@
 **/*.rs.bk
 .DS_Store
 .cargo-target/
+
+# Node (if any future JS tooling added)
+node_modules/
+*.log
+
+# Generated output
+output/
