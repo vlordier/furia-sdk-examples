@@ -1,0 +1,17 @@
+[project]
+name = "furia-sdk-examples-docs"
+version = "0.1.0"
+description = "Documentation site for Furia SDK Examples"
+requires-python = ">=3.11"
+dependencies = [
+    "mkdocs-material>=9.0.0",
+    "mkdocs-mermaid2-plugin>=1.0.0",
+]
+
+[project.optional-dependencies]
+lint = [
+    "pre-commit>=4.0.0",
+]
+
+[tool.mkdocs]
+build_dir = "site"

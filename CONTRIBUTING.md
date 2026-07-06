@@ -5,6 +5,8 @@
 2. Clone your fork
 3. `cargo build --workspace`
 4. `cargo test --workspace`
+5. `uv sync` (install Python deps for mkdocs site)
+6. `pre-commit install` (install git hooks)
 
 ## Adding a New Example (`hello-*` crate)
 
