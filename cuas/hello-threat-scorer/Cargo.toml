@@ -1,0 +1,12 @@
+[package]
+name = "hello-threat-scorer"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing ThreatScorer — classify drones and assign threat levels"
+
+[dependencies]
+furia-sdk.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+[lints]
+workspace = true

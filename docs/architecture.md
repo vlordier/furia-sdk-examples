@@ -2,8 +2,9 @@
 
 ## Overview
 
-This repo contains 18 example crates, each demonstrating one Furia SDK trait.
-They serve as copy-paste starting points for external C2 plugin developers.
+This repo contains 25 example crates, each demonstrating one Furia SDK trait or
+shared type family. They serve as copy-paste starting points for external C2
+plugin developers.
 
 ## Architecture Diagram
 

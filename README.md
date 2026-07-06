@@ -78,6 +78,12 @@ Each example is a standalone binary that:
 See also: [furia-plugin-example](https://github.com/vlordier/furia-plugin-example) (complete plugin), [furia-core](https://github.com/vlordier/furia-core) (SDK traits).
 
 
-## Roadmap
+### C-UAS / Air Defence
 
-The current workspace covers the core examples listed above. C-UAS trait examples are planned for `AirspaceManager`, `EngagementPlanner`, `InterceptorPairingProvider`, `KillChainOrchestrator`, and `ThreatScorer`.
+| Crate | SDK Trait | Description |
+|-------|-----------|-------------|
+| `hello-airspace` | AirspaceManager | No-fly zones and airspace deconfliction |
+| `hello-engagement` | EngagementPlanner | Salvo computation and launch timing |
+| `hello-interceptor-pairing` | InterceptorPairingProvider | Map drone threats to best interceptor |
+| `hello-kill-chain` | KillChainOrchestrator | D-DIL detect-identify-engage-automation |
+| `hello-threat-scorer` | ThreatScorer | Drone classification and threat scoring |

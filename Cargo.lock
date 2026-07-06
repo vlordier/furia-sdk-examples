@@ -235,6 +235,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "hello-airspace"
+version = "0.1.0"
+dependencies = [
+ "furia-sdk",
+ "uuid",
+]
+
+[[package]]
 name = "hello-assessment"
 version = "0.1.0"
 dependencies = [
@@ -298,6 +306,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "hello-engagement"
+version = "0.1.0"
+dependencies = [
+ "furia-sdk",
+ "uuid",
+]
+
+[[package]]
 name = "hello-ew"
 version = "0.1.0"
 dependencies = [
@@ -328,6 +344,23 @@ name = "hello-intent"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",
+ "uuid",
+]
+
+[[package]]
+name = "hello-interceptor-pairing"
+version = "0.1.0"
+dependencies = [
+ "furia-sdk",
+ "uuid",
+]
+
+[[package]]
+name = "hello-kill-chain"
+version = "0.1.0"
+dependencies = [
+ "furia-sdk",
+ "serde_json",
  "uuid",
 ]
 
@@ -384,6 +417,15 @@ dependencies = [
 
 [[package]]
 name = "hello-terrain"
+version = "0.1.0"
+dependencies = [
+ "furia-sdk",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
+name = "hello-threat-scorer"
 version = "0.1.0"
 dependencies = [
  "furia-sdk",

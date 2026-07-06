@@ -1,0 +1,12 @@
+[package]
+name = "hello-kill-chain"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing KillChainOrchestrator — D-DIL automation for C-UAS"
+
+[dependencies]
+furia-sdk.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+[lints]
+workspace = true

@@ -1,0 +1,11 @@
+[package]
+name = "hello-interceptor-pairing"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing InterceptorPairingProvider — map threats to effectors"
+
+[dependencies]
+furia-sdk.workspace = true
+uuid.workspace = true
+[lints]
+workspace = true

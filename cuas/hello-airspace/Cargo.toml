@@ -1,0 +1,11 @@
+[package]
+name = "hello-airspace"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing AirspaceManager — no-fly zones and deconfliction"
+
+[dependencies]
+furia-sdk.workspace = true
+uuid.workspace = true
+[lints]
+workspace = true

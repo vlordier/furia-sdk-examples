@@ -1,0 +1,11 @@
+[package]
+name = "hello-engagement"
+version.workspace = true
+edition.workspace = true
+description = "Hello World: implementing EngagementPlanner — salvo computation and launch timing"
+
+[dependencies]
+furia-sdk.workspace = true
+uuid.workspace = true
+[lints]
+workspace = true
