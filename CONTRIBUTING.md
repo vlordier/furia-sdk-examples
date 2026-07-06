@@ -8,9 +8,9 @@
 
 ## Adding a New Example (`hello-*` crate)
 
-1. Copy an existing hello-* crate (e.g. `hello-sensor`) as a template
+1. Copy an existing crate (e.g. `sensors/hello-sensor`) as a template and place it in the matching category directory
 2. Rename the crate and implement the SDK trait from `furia-sdk`
-3. Register it in the workspace `Cargo.toml` if needed (the glob `hello-*` auto-discovers)
+3. Register it in the workspace `Cargo.toml` if needed (per-category globs auto-discover — add to the appropriate category in `members`)
 4. Add `[lints] workspace = true` to the new crate's `Cargo.toml`
 5. Add a row to the examples table in `README.md`
 6. Write tests demonstrating the trait's key methods

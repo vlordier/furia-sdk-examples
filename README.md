@@ -5,10 +5,10 @@ Standalone example binaries for the Furia SDK traits — reference patterns for 
 ## Quickstart
 
 ```bash
-# Run a specific example
-cargo run -p hello-decomposition
-cargo run -p hello-policy
-cargo run -p hello-simulation
+# Pick a category and run any example:
+cargo run -p hello-sensor      # sensors
+cargo run -p hello-policy      # governance
+cargo run -p hello-simulation  # operations
 
 # Run all tests
 export CARGO_TARGET_DIR=.cargo-target CARGO_INCREMENTAL=0
@@ -17,26 +17,54 @@ cargo test --release --workspace
 
 ## Examples
 
+### Sensors
+
 | Crate | SDK Trait | Description |
 |-------|-----------|-------------|
 | `hello-acoustic` | AcousticProvider | Acoustic threat detection |
-| `hello-assessment` | AssessmentEngine | Threat/risk assessment |
 | `hello-cbrn` | CbrnProvider | CBRN detection |
-| `hello-civilian` | CivilianDensityProvider | Civilian behavior modeling |
-| `hello-decision-tree` | DecisionTreeProvider | COA decision trees |
-| `hello-decomposition` | DecompositionStrategy | Mission decomposition |
-| `hello-dispatch` | DispatchAdapter | Asset dispatch |
 | `hello-ew` | ElectronicWarfare | EW simulation |
-| `hello-export` | ExportAdapter | Data export |
+| `hello-sensor` | SensorAdapter | Generic sensor |
+
+### Entities
+
+| Crate | SDK Trait | Description |
+|-------|-----------|-------------|
+| `hello-bso` | BattlespaceObject | COP battlespace object |
+| `hello-civilian` | CivilianDensityProvider | Civilian behavior modeling |
+| `hello-platform` | PlatformProvider | Platform management |
+
+### Intelligence
+
+| Crate | SDK Trait | Description |
+|-------|-----------|-------------|
+| `hello-assessment` | AssessmentEngine | Threat/risk assessment |
+| `hello-decomposition` | DecompositionStrategy | Mission decomposition |
 | `hello-fusion` | FusionEngine | Sensor fusion |
 | `hello-intent` | IntentParser | Natural language intent |
-| `hello-logistics` | LogisticsProvider | Logistics planning |
-| `hello-nato-coalition` | ModuleHandle / SecurityContext | Coalition-labelled module lifecycle and audit demo (NATO domain types are planned for a later SDK tag) |
-| `hello-platform` | PlatformProvider | Platform management |
-| `hello-policy` | PolicyProvider | IHL/ROE policy |
-| `hello-sensor` | SensorAdapter | Generic sensor |
-| `hello-simulation` | SimulationProvider | Entity simulation |
 | `hello-terrain` | TerrainProvider | Terrain analysis |
+
+### Operations
+
+| Crate | SDK Trait | Description |
+|-------|-----------|-------------|
+| `hello-dispatch` | DispatchAdapter | Asset dispatch |
+| `hello-logistics` | LogisticsProvider | Logistics planning |
+| `hello-simulation` | SimulationProvider | Entity simulation |
+
+### Governance
+
+| Crate | SDK Trait | Description |
+|-------|-----------|-------------|
+| `hello-decision-tree` | DecisionTreeProvider | COA decision trees |
+| `hello-policy` | PolicyProvider | IHL/ROE policy |
+
+### Integrations
+
+| Crate | SDK Trait | Description |
+|-------|-----------|-------------|
+| `hello-export` | ExportAdapter | Data export |
+| `hello-nato-coalition` | ModuleHandle / SecurityContext | Coalition-labelled module lifecycle and audit demo (NATO domain types are planned for a later SDK tag) |
 | `hello-ui` | (UI components) | SolidJS UI plugins |
 
 ## Architecture
