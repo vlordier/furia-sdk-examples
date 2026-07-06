@@ -37,7 +37,7 @@
 - [ ] `cargo clippy --workspace -- -D warnings` passes
 - [ ] `cargo test --workspace` passes
 - [ ] `cargo fmt --all` has been run
-- [ ] README.md example table is updated if adding a new crate
+- [ ] README.md example table is regenerated: `./scripts/generate-docs.sh`
 - [ ] `[lints] workspace = true` is present in the new crate's Cargo.toml
 
 ## Code Style

@@ -60,12 +60,6 @@ generate_tables() {
   done
 }
 
-# Check for uncommitted changes
-if ! git -C "$ROOT" diff --quiet -- README.md 2>/dev/null; then
-  echo "Warning: README.md has unstaged changes. Commit or stash them first." >&2
-  exit 1
-fi
-
 {
   echo "# Furia SDK Examples"
   echo ""
