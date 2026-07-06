@@ -21,51 +21,61 @@ cargo test --release --workspace
 
 | Crate | SDK Trait | Description |
 |-------|-----------|-------------|
-| `hello-acoustic` | AcousticProvider | Acoustic threat detection |
-| `hello-cbrn` | CbrnProvider | CBRN detection |
-| `hello-ew` | ElectronicWarfare | EW simulation |
-| `hello-sensor` | SensorAdapter | Generic sensor |
+| `hello-acoustic` | AcousticProvider | passive sonar detection |
+| `hello-cbrn` | CbrnProvider | Gaussian plume dispersion |
+| `hello-ew` | EWSimProvider | jammer vs radio link |
+| `hello-sensor` | SensorAdapter | ingest radar track data |
 
 ### Entities
 
 | Crate | SDK Trait | Description |
 |-------|-----------|-------------|
-| `hello-bso` | BattlespaceObject | COP battlespace object |
-| `hello-civilian` | CivilianDensityProvider | Civilian behavior modeling |
-| `hello-platform` | PlatformProvider | Platform management |
+| `hello-bso` | BattlespaceObject | the authoritative COP track type (STANAG 4255 / APP-6) |
+| `hello-civilian` | CivilianDensityProvider | population by region |
+| `hello-platform` |  | composing multiple providers into a platform using ProviderRegistry |
 
 ### Intelligence
 
 | Crate | SDK Trait | Description |
 |-------|-----------|-------------|
-| `hello-assessment` | AssessmentEngine | Threat/risk assessment |
-| `hello-decomposition` | DecompositionStrategy | Mission decomposition |
-| `hello-fusion` | FusionEngine | Sensor fusion |
-| `hello-intent` | IntentParser | Natural language intent |
-| `hello-terrain` | TerrainProvider | Terrain analysis |
+| `hello-assessment` | AssessmentEngine | battle damage assessment |
+| `hello-decomposition` | DecompositionStrategy | mission into sub-phases |
+| `hello-fusion` | FusionEngine | correlate sensor tracks |
+| `hello-intent` | IntentProvider | parse commander intent text |
+| `hello-terrain` | TerrainAnalyst | slope-based mobility classification |
 
 ### Operations
 
 | Crate | SDK Trait | Description |
 |-------|-----------|-------------|
-| `hello-dispatch` | DispatchAdapter | Asset dispatch |
-| `hello-logistics` | LogisticsProvider | Logistics planning |
-| `hello-simulation` | SimulationProvider | Entity simulation |
+| `hello-dispatch` | DispatchAdapter | send action to a target |
+| `hello-logistics` | LogisticsProvider | convoy fuel tracking |
+| `hello-simulation` | SimulationProvider | drone patrol with fuel consumption |
 
 ### Governance
 
 | Crate | SDK Trait | Description |
 |-------|-----------|-------------|
-| `hello-decision-tree` | DecisionTreeProvider | COA decision trees |
-| `hello-policy` | PolicyProvider | IHL/ROE policy |
+| `hello-decision-tree` | DecisionTreeProvider | threshold classifier |
+| `hello-policy` | PolicyProvider | ROE with civilian protection |
 
 ### Integrations
 
 | Crate | SDK Trait | Description |
 |-------|-----------|-------------|
-| `hello-export` | ExportAdapter | Data export |
-| `hello-nato-coalition` | ModuleHandle / SecurityContext | Coalition-labelled module lifecycle and audit demo (NATO domain types are planned for a later SDK tag) |
-| `hello-ui` | (UI components) | SolidJS UI plugins |
+| `hello-export` | ExportAdapter | export entities to JSON |
+| `hello-nato-coalition` |  | using ModuleHandle and SecurityContext — NATO coalition lifecycle and audit |
+| `hello-ui` | UiPlugin | custom panel metadata |
+
+### C-UAS / Air Defence
+
+| Crate | SDK Trait | Description |
+|-------|-----------|-------------|
+| `hello-airspace` | AirspaceManager | no-fly zones and deconfliction |
+| `hello-engagement` | EngagementPlanner | salvo computation and launch timing |
+| `hello-interceptor-pairing` | InterceptorPairingProvider | map threats to effectors |
+| `hello-kill-chain` | KillChainOrchestrator | D-DIL automation for C-UAS |
+| `hello-threat-scorer` | ThreatScorer | classify drones and assign threat levels |
 
 ## Architecture
 
@@ -77,13 +87,3 @@ Each example is a standalone binary that:
 
 See also: [furia-plugin-example](https://github.com/vlordier/furia-plugin-example) (complete plugin), [furia-core](https://github.com/vlordier/furia-core) (SDK traits).
 
-
-### C-UAS / Air Defence
-
-| Crate | SDK Trait | Description |
-|-------|-----------|-------------|
-| `hello-airspace` | AirspaceManager | No-fly zones and airspace deconfliction |
-| `hello-engagement` | EngagementPlanner | Salvo computation and launch timing |
-| `hello-interceptor-pairing` | InterceptorPairingProvider | Map drone threats to best interceptor |
-| `hello-kill-chain` | KillChainOrchestrator | D-DIL detect-identify-engage-automation |
-| `hello-threat-scorer` | ThreatScorer | Drone classification and threat scoring |

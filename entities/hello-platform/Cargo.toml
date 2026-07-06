@@ -2,7 +2,7 @@
 name = "hello-platform"
 version.workspace = true
 edition.workspace = true
-description = "Hello World: composing providers into a platform using ProviderRegistry"
+description = "Hello World: composing multiple providers into a platform using ProviderRegistry"
 
 [dependencies]
 furia-sdk.workspace = true

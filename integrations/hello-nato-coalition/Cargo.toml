@@ -2,7 +2,7 @@
 name = "hello-nato-coalition"
 version.workspace = true
 edition.workspace = true
-description = "Example: NATO coalition operations pattern — module lifecycle and audit"
+description = "Hello World: using ModuleHandle and SecurityContext — NATO coalition lifecycle and audit"
 
 [dependencies]
 furia-sdk.workspace = true
