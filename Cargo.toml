@@ -1,6 +1,13 @@
 [workspace]
 resolver = "2"
-members = ["hello-*"]
+members = [
+    "sensors/*",
+    "entities/*",
+    "intelligence/*",
+    "operations/*",
+    "governance/*",
+    "integrations/*",
+]
 
 [workspace.package]
 version = "0.1.0"
