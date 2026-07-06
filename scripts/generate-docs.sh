@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Auto-generate README.md examples tables from Cargo.toml descriptions.
+# Auto-generate README.md and docs/examples.md from Cargo.toml descriptions.
 # Usage: ./scripts/generate-docs.sh
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 README="$ROOT/README.md"
+DOCS_EXAMPLES="$ROOT/docs/examples.md"
 
 # Extract crate info from Cargo.toml: output "name|trait|description"
 parse_crate() {
@@ -17,7 +18,6 @@ parse_crate() {
   desc="${desc#Hello World: }"
 
   # Extract trait name and description
-  # Format: "implementing TraitName — description" or "TraitName — description" or just "description"
   if [[ "$desc" =~ ^implementing\ ([A-Za-z]+)\ —\ (.+)$ ]]; then
     trait="${BASH_REMATCH[1]}"
     short_desc="${BASH_REMATCH[2]}"
@@ -60,6 +60,7 @@ generate_tables() {
   done
 }
 
+# Generate README.md
 {
   echo "# Furia SDK Examples"
   echo ""
@@ -93,4 +94,23 @@ generate_tables() {
   echo ""
 } > "$README"
 
-echo "Regenerated $README"
+# Generate docs/examples.md (for mkdocs)
+{
+  echo "# Examples Catalog"
+  echo ""
+  echo "All {{ crate_count }} example crates organized by category."
+  echo ""
+  generate_tables
+  echo ""
+  echo "## See Also"
+  echo ""
+  echo "- [Architecture](architecture.md)"
+  echo ""
+} > "$DOCS_EXAMPLES"
+
+# Replace placeholder with actual count
+CRATE_COUNT=$(find "$ROOT" -name Cargo.toml -maxdepth 3 \
+  | grep -v target | grep -v ".cargo" | grep -v "/\." | wc -l | tr -d ' ')
+sed -i '' "s/{{ crate_count }}/$CRATE_COUNT/g" "$DOCS_EXAMPLES"
+
+echo "Regenerated $README and $DOCS_EXAMPLES"

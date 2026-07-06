@@ -1,0 +1,32 @@
+site_name: Furia SDK Examples
+site_description: Standalone example binaries for the Furia SDK traits
+site_url: https://durandal-robotics.github.io/furia-sdk-examples/
+repo_url: https://github.com/durandal-robotics/furia-sdk-examples
+edit_uri: edit/main/docs/
+
+plugins:
+  - search
+  - mermaid2
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.action.edit
+
+nav:
+  - Home: index.md
+  - Examples: examples.md
+  - Architecture: architecture.md
+  - Screenshots: screenshots/README.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/durandal-robotics/furia-sdk-examples

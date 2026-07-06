@@ -12,7 +12,7 @@
 2. Rename the crate and implement the SDK trait from `furia-sdk`
 3. Register it in the workspace `Cargo.toml` if needed (per-category globs auto-discover — add to the appropriate category in `members`)
 4. Add `[lints] workspace = true` to the new crate's `Cargo.toml`
-5. Add a row to the examples table in `README.md`
+5. Add a row to the examples table: `./scripts/generate-docs.sh` (auto-generates `README.md` and `docs/examples.md`)
 6. Write tests demonstrating the trait's key methods
 7. Run `cargo check --workspace` and `cargo test --workspace` before submitting
 
