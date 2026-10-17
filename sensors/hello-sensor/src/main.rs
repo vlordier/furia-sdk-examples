@@ -10,12 +10,10 @@ use uuid::Uuid;
 // ── Demo constants ──────────────────────────────────────────────
 const DEMO_LAT: f64 = 48.85;
 const DEMO_LON: f64 = 2.35;
-const DEMO_DURATION_SECS: u64 = 3600;
 
 // ── Confidence constants ────────────────────────────────────────
 const HIGH_CONFIDENCE: f64 = 0.85;
 const MEDIUM_CONFIDENCE: f64 = 0.7;
-const LOW_CONFIDENCE: f64 = 0.5;
 
 /// A radar sensor adapter that parses CSV payloads and classifies tracks.
 struct RadarAdapter {

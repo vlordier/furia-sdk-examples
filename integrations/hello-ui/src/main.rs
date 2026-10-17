@@ -11,7 +11,6 @@ use furia_sdk::ui::{UiPlugin, UiPluginMetadata, UiPluginOutput, UiPluginProps};
 // ── Demo constants ──────────────────────────────────────────────
 const DEMO_LAT: f64 = 48.85;
 const DEMO_LON: f64 = 2.35;
-const DEMO_DURATION_SECS: u64 = 3600;
 
 /// A custom panel that shows an asset status summary.
 struct AssetStatusPanel;

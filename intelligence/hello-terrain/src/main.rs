@@ -15,7 +15,6 @@ use uuid::Uuid;
 // ── Demo constants ──────────────────────────────────────────────
 const DEMO_LAT: f64 = 48.85;
 const DEMO_LON: f64 = 2.35;
-const DEMO_DURATION_SECS: u64 = 3600;
 
 /// A terrain analyst that classifies by a simple slope heuristic.
 struct SlopeTerrain {

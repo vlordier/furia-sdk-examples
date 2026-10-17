@@ -10,9 +10,6 @@ use furia_sdk::simulation::SimEvent;
 use uuid::Uuid;
 
 // ── Demo constants ──────────────────────────────────────────────
-const DEMO_LAT: f64 = 48.85;
-const DEMO_LON: f64 = 2.35;
-const DEMO_DURATION_SECS: u64 = 3600;
 
 /// A simple BDA engine that checks for impact proximity indicators.
 struct StrikeAssessor;

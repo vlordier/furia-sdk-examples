@@ -10,8 +10,6 @@ use uuid::Uuid;
 
 // ── Confidence constants ────────────────────────────────────────
 const HIGH_CONFIDENCE: f64 = 0.85;
-const MEDIUM_CONFIDENCE: f64 = 0.7;
-const LOW_CONFIDENCE: f64 = 0.5;
 
 /// A proximity-based fusion engine using distance and heading heuristics.
 struct ProximityFusion;
