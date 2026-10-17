@@ -8,7 +8,9 @@
 use std::time::Duration;
 
 use furia_sdk::module_handle::{LogLevel, ModuleHandle, ModuleHealth};
-use furia_sdk::simulation::{EntityState, Scenario, SimEvent, SimulationProvider};
+use furia_sdk::simulation::{
+    duration_millis_saturating, EntityState, Scenario, SimEvent, SimulationProvider,
+};
 use uuid::Uuid;
 
 // ── Demo constants ──────────────────────────────────────────────
@@ -24,26 +26,37 @@ const DEMO_DURATION_SECS: u64 = 3600;
 
 /// A minimal drone simulator that patrols a route and burns fuel.
 struct PatrolDrone {
-    handle: Option<ModuleHandle>,
     fuel_liters: f64,
     position: (f64, f64, f64),
-    tick_count: u64,
+    elapsed_ms: u64,
 }
 
 impl PatrolDrone {
     fn new() -> Self {
-        Self { handle: None, fuel_liters: 100.0, position: (DEMO_LAT, DEMO_LON, 500.0), tick_count: 0 }
+        Self {
+            fuel_liters: 100.0,
+            position: (DEMO_LAT, DEMO_LON, 500.0),
+            elapsed_ms: 0,
+        }
     }
 }
 
 impl SimulationProvider for PatrolDrone {
-    fn init(&mut self, scenario: &Scenario, handle: &ModuleHandle) {
-        self.handle = Some(ModuleHandle::new_test(handle.module_id));
-        self.handle.as_ref().expect("init must be called before tick").log(LogLevel::Info, &format!("DroneSim: scenario '{}' loaded", scenario.name));
+    fn init(&mut self, scenario: &Scenario, handle: &ModuleHandle) -> Result<(), String> {
+        handle.log(
+            LogLevel::Info,
+            &format!("DroneSim: scenario '{}' loaded", scenario.name),
+        );
+        self.fuel_liters = 100.0;
+        self.position = (DEMO_LAT, DEMO_LON, 500.0);
+        self.elapsed_ms = 0;
+        Ok(())
     }
 
     fn tick(&mut self, dt: Duration) -> Vec<SimEvent> {
-        self.tick_count += 1;
+        self.elapsed_ms = self
+            .elapsed_ms
+            .saturating_add(duration_millis_saturating(dt));
         self.fuel_liters -= 0.5 * dt.as_secs_f64();
         self.position.1 += 0.001; // drift east each tick
 
@@ -53,7 +66,7 @@ impl SimulationProvider for PatrolDrone {
                 source: "drone-001".into(),
                 target: Some("base".into()),
                 params: serde_json::json!({"reason": "out of fuel"}),
-                timestamp_ms: self.tick_count * 1000,
+                timestamp_ms: self.elapsed_ms,
             }];
         }
         vec![SimEvent {
@@ -61,7 +74,7 @@ impl SimulationProvider for PatrolDrone {
             source: "drone-001".into(),
             target: None,
             params: serde_json::json!({"fuel": self.fuel_liters}),
-            timestamp_ms: self.tick_count * 1000,
+            timestamp_ms: self.elapsed_ms,
         }]
     }
 
@@ -72,7 +85,11 @@ impl SimulationProvider for PatrolDrone {
                 position: self.position,
                 velocity: Some(25.0),
                 heading: Some(90.0),
-                status: if self.fuel_liters > 0.0 { "patrolling".into() } else { "bingo".into() },
+                status: if self.fuel_liters > 0.0 {
+                    "patrolling".into()
+                } else {
+                    "bingo".into()
+                },
             })
         } else {
             None
@@ -83,9 +100,13 @@ impl SimulationProvider for PatrolDrone {
         if self.fuel_liters > 20.0 {
             ModuleHealth::Healthy
         } else if self.fuel_liters > 0.0 {
-            ModuleHealth::Degraded { reason: format!("fuel {:.1}L", self.fuel_liters) }
+            ModuleHealth::Degraded {
+                reason: format!("fuel {:.1}L", self.fuel_liters),
+            }
         } else {
-            ModuleHealth::Unhealthy { reason: "fuel depleted".into() }
+            ModuleHealth::Unhealthy {
+                reason: "fuel depleted".into(),
+            }
         }
     }
 }
@@ -102,13 +123,18 @@ fn main() {
 
     let mut drone = PatrolDrone::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    drone.init(&scenario, &handle);
+    drone
+        .init(&scenario, &handle)
+        .expect("demo scenario should initialize");
 
     println!("=== Drone Patrol Simulation ===");
     for _ in 0..3 {
         let _events = drone.tick(Duration::from_secs(60));
         if let Some(state) = drone.entity_state("drone-001") {
-            println!(" Position: ({:.4}, {:.4}, {:.0}) — {}", state.position.0, state.position.1, state.position.2, state.status);
+            println!(
+                " Position: ({:.4}, {:.4}, {:.0}) — {}",
+                state.position.0, state.position.1, state.position.2, state.status
+            );
         }
         println!(" Health: {:?}", drone.health());
     }
@@ -118,16 +144,26 @@ fn main() {
 mod tests {
     use super::*;
 
+    fn scenario() -> Scenario {
+        Scenario {
+            id: "test".into(),
+            name: "test".into(),
+            duration_secs: 60,
+            order_of_battle: serde_json::json!({}),
+            timeline: vec![],
+            environment: serde_json::json!({}),
+        }
+    }
+
     #[test]
     fn test_drone_init_and_state() {
         let mut drone = PatrolDrone::new();
-        let scenario = Scenario {
-            id: "test".into(), name: "test".into(), duration_secs: 60,
-            order_of_battle: serde_json::json!({}), timeline: vec![],
-            environment: serde_json::json!({}),
-        };
-        drone.init(&scenario, &ModuleHandle::new_test(Uuid::new_v4()));
-        let state = drone.entity_state("drone-001").expect("drone-001 should be registered");
+        drone
+            .init(&scenario(), &ModuleHandle::new_test(Uuid::new_v4()))
+            .unwrap();
+        let state = drone
+            .entity_state("drone-001")
+            .expect("drone-001 should be registered");
         assert_eq!(state.entity_id, "drone-001");
         assert_eq!(state.status, "patrolling");
     }
@@ -135,13 +171,27 @@ mod tests {
     #[test]
     fn test_tick_burns_fuel() {
         let mut drone = PatrolDrone::new();
-        drone.init(&Scenario {
-            id: "test".into(), name: "test".into(), duration_secs: 60,
-            order_of_battle: serde_json::json!({}), timeline: vec![],
-            environment: serde_json::json!({}),
-        }, &ModuleHandle::new_test(Uuid::new_v4()));
+        drone
+            .init(&scenario(), &ModuleHandle::new_test(Uuid::new_v4()))
+            .unwrap();
         drone.tick(Duration::from_secs(60));
         assert!(drone.fuel_liters < 100.0);
+    }
+
+    #[test]
+    fn tick_timestamps_accumulate_elapsed_time_and_saturate() {
+        let mut drone = PatrolDrone::new();
+        drone
+            .init(&scenario(), &ModuleHandle::new_test(Uuid::new_v4()))
+            .unwrap();
+
+        let events = drone.tick(Duration::from_millis(1_500));
+        assert_eq!(events[0].timestamp_ms, 1_500);
+        let events = drone.tick(Duration::from_micros(1_999));
+        assert_eq!(events[0].timestamp_ms, 1_501);
+
+        let events = drone.tick(Duration::MAX);
+        assert_eq!(events[0].timestamp_ms, u64::MAX);
     }
 
     #[test]

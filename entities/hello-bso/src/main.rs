@@ -77,7 +77,13 @@ fn main() {
     // ── 1. Build a small COP picture ─────────────────────────────────────────
     let objects: Vec<BattlespaceObject> = vec![
         make_object("ALPHA-1", 48.85, 2.35, Affiliation::Friend, "mavlink"),
-        make_object("ALPHA-2", 48.86, 2.36, Affiliation::AssumedFriend, "stanag4586"),
+        make_object(
+            "ALPHA-2",
+            48.86,
+            2.36,
+            Affiliation::AssumedFriend,
+            "stanag4586",
+        ),
         make_object("BRAVO-1", 48.83, 2.32, Affiliation::Hostile, "sapient"),
         make_object("CHARLIE-1", 48.80, 2.40, Affiliation::Suspect, "asterix"),
         make_object("DELTA-1", 48.90, 2.50, Affiliation::Neutral, "tak-cot"),
@@ -93,14 +99,14 @@ fn main() {
             obj.affiliation,
             obj.pedigree.system,
             obj.track_quality.0,
-            obj.affiliation.is_threat(),
+            obj.affiliation.is_foe(),
             obj.affiliation.is_friend(),
         );
     }
 
     // ── 2. Filter threats ─────────────────────────────────────────────────────
     let threats: Vec<&BattlespaceObject> =
-        objects.iter().filter(|o| o.affiliation.is_threat()).collect();
+        objects.iter().filter(|o| o.affiliation.is_foe()).collect();
 
     println!("\n=== Threat tracks ({}) ===", threats.len());
     for t in &threats {
@@ -114,8 +120,10 @@ fn main() {
     }
 
     // ── 3. Filter friendlies ──────────────────────────────────────────────────
-    let friendlies: Vec<&BattlespaceObject> =
-        objects.iter().filter(|o| o.affiliation.is_friend()).collect();
+    let friendlies: Vec<&BattlespaceObject> = objects
+        .iter()
+        .filter(|o| o.affiliation.is_friend())
+        .collect();
 
     println!("\n=== Friendly tracks ({}) ===", friendlies.len());
     for f in &friendlies {
