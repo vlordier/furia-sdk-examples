@@ -16,8 +16,14 @@ const DEMO_LON: f64 = 2.35;
 struct JsonExportAdapter;
 
 impl ExportAdapter for JsonExportAdapter {
-    fn export(&self, entity: &ExportEntity, _format: &ExportFormat, _handle: &ModuleHandle) -> Result<Vec<u8>, ExportError> {
-        let json = serde_json::to_string_pretty(entity).map_err(|e| ExportError::Failed(e.to_string()))?;
+    fn export(
+        &self,
+        entity: &ExportEntity,
+        _format: &ExportFormat,
+        _handle: &ModuleHandle,
+    ) -> Result<Vec<u8>, ExportError> {
+        let json =
+            serde_json::to_string_pretty(entity).map_err(|e| ExportError::Failed(e.to_string()))?;
         Ok(json.into_bytes())
     }
 
@@ -25,7 +31,9 @@ impl ExportAdapter for JsonExportAdapter {
         vec![ExportFormat::Custom("json".into())]
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
@@ -46,7 +54,9 @@ fn main() {
     };
 
     println!("=== Export ===");
-    let json = exporter.export(&entity, &ExportFormat::Custom("json".into()), &handle).expect("export should succeed for valid entity");
+    let json = exporter
+        .export(&entity, &ExportFormat::Custom("json".into()), &handle)
+        .expect("export should succeed for valid entity");
     println!("{}", String::from_utf8_lossy(&json));
 
     println!("\nSupported formats: {:?}", exporter.supported_formats());
@@ -60,8 +70,14 @@ mod tests {
     fn test_export_returns_non_empty() {
         let e = JsonExportAdapter;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let entity = ExportEntity { entity_type: "test".into(), entity_id: "id-1".into(), attributes: serde_json::json!({"key": "value"}) };
-        let bytes = e.export(&entity, &ExportFormat::Custom("json".into()), &h).unwrap();
+        let entity = ExportEntity {
+            entity_type: "test".into(),
+            entity_id: "id-1".into(),
+            attributes: serde_json::json!({"key": "value"}),
+        };
+        let bytes = e
+            .export(&entity, &ExportFormat::Custom("json".into()), &h)
+            .unwrap();
         assert!(!bytes.is_empty());
     }
 
@@ -69,8 +85,14 @@ mod tests {
     fn test_export_valid_json() {
         let e = JsonExportAdapter;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let entity = ExportEntity { entity_type: "test".into(), entity_id: "id-1".into(), attributes: serde_json::json!({"a": 1}) };
-        let bytes = e.export(&entity, &ExportFormat::Custom("json".into()), &h).unwrap();
+        let entity = ExportEntity {
+            entity_type: "test".into(),
+            entity_id: "id-1".into(),
+            attributes: serde_json::json!({"a": 1}),
+        };
+        let bytes = e
+            .export(&entity, &ExportFormat::Custom("json".into()), &h)
+            .unwrap();
         let val: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
         assert_eq!(val["entity_type"], "test");
     }
@@ -78,6 +100,8 @@ mod tests {
     #[test]
     fn test_supported_formats_includes_json() {
         let e = JsonExportAdapter;
-        assert!(e.supported_formats().contains(&ExportFormat::Custom("json".into())));
+        assert!(e
+            .supported_formats()
+            .contains(&ExportFormat::Custom("json".into())));
     }
 }

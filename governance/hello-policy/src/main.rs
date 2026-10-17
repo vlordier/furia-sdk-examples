@@ -6,7 +6,9 @@
 //! `PolicyDecision`.
 
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
-use furia_sdk::policy::{PolicyConstraint, PolicyContext, PolicyDecision, PolicyError, PolicyProvider};
+use furia_sdk::policy::{
+    PolicyConstraint, PolicyContext, PolicyDecision, PolicyError, PolicyProvider,
+};
 use uuid::Uuid;
 
 // ── Demo constants ──────────────────────────────────────────────
@@ -18,7 +20,11 @@ const HIGH_CONFIDENCE: f64 = 0.85;
 struct CivilianProtectionPolicy;
 
 impl PolicyProvider for CivilianProtectionPolicy {
-    fn evaluate(&self, ctx: &PolicyContext, _handle: &ModuleHandle) -> Result<PolicyDecision, PolicyError> {
+    fn evaluate(
+        &self,
+        ctx: &PolicyContext,
+        _handle: &ModuleHandle,
+    ) -> Result<PolicyDecision, PolicyError> {
         // Civilian targets always denied (Distinction principle)
         if ctx.target_id.starts_with("civ-") {
             return Ok(PolicyDecision::Deny {
@@ -45,7 +51,9 @@ impl PolicyProvider for CivilianProtectionPolicy {
         }]
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
@@ -53,14 +61,20 @@ fn main() {
     let handle = ModuleHandle::new_test(Uuid::new_v4());
 
     let civilian_ctx = PolicyContext {
-        action_class: "engage".into(), target_id: "civ-001".into(),
-        target_confidence: 0.95, collateral_risk_score: 0.0,
-        operator_role: "pilot".into(), mission_id: "m-001".into(),
+        action_class: "engage".into(),
+        target_id: "civ-001".into(),
+        target_confidence: 0.95,
+        collateral_risk_score: 0.0,
+        operator_role: "pilot".into(),
+        mission_id: "m-001".into(),
     };
     let threat_ctx = PolicyContext {
-        action_class: "engage".into(), target_id: "threat-t72".into(),
-        target_confidence: 0.92, collateral_risk_score: 0.05,
-        operator_role: "pilot".into(), mission_id: "m-001".into(),
+        action_class: "engage".into(),
+        target_id: "threat-t72".into(),
+        target_confidence: 0.92,
+        collateral_risk_score: 0.05,
+        operator_role: "pilot".into(),
+        mission_id: "m-001".into(),
     };
 
     println!("=== Civilian Target ===");
@@ -79,12 +93,23 @@ mod tests {
         let p = CivilianProtectionPolicy;
         let h = ModuleHandle::new_test(Uuid::new_v4());
         let ctx = PolicyContext {
-            action_class: "engage".into(), target_id: "civ-001".into(),
-            target_confidence: 0.9, collateral_risk_score: 0.0,
-            operator_role: "pilot".into(), mission_id: "m-001".into(),
+            action_class: "engage".into(),
+            target_id: "civ-001".into(),
+            target_confidence: 0.9,
+            collateral_risk_score: 0.0,
+            operator_role: "pilot".into(),
+            mission_id: "m-001".into(),
         };
-        let r = p.evaluate(&ctx, &h).expect("policy evaluation should succeed");
-        assert_eq!(r, PolicyDecision::Deny { reason: "civilian target — violates Distinction".into(), ihl_articles: vec!["API 51".into(), "API 52".into()] });
+        let r = p
+            .evaluate(&ctx, &h)
+            .expect("policy evaluation should succeed");
+        assert_eq!(
+            r,
+            PolicyDecision::Deny {
+                reason: "civilian target — violates Distinction".into(),
+                ihl_articles: vec!["API 51".into(), "API 52".into()]
+            }
+        );
     }
 
     #[test]
@@ -92,9 +117,12 @@ mod tests {
         let p = CivilianProtectionPolicy;
         let h = ModuleHandle::new_test(Uuid::new_v4());
         let ctx = PolicyContext {
-            action_class: "engage".into(), target_id: "threat-t72".into(),
-            target_confidence: 0.92, collateral_risk_score: 0.05,
-            operator_role: "pilot".into(), mission_id: "m-001".into(),
+            action_class: "engage".into(),
+            target_id: "threat-t72".into(),
+            target_confidence: 0.92,
+            collateral_risk_score: 0.05,
+            operator_role: "pilot".into(),
+            mission_id: "m-001".into(),
         };
         assert_eq!(p.evaluate(&ctx, &h).unwrap(), PolicyDecision::Allow);
     }
@@ -104,10 +132,16 @@ mod tests {
         let p = CivilianProtectionPolicy;
         let h = ModuleHandle::new_test(Uuid::new_v4());
         let ctx = PolicyContext {
-            action_class: "engage".into(), target_id: "threat-t72".into(),
-            target_confidence: 0.5, collateral_risk_score: 0.05,
-            operator_role: "pilot".into(), mission_id: "m-001".into(),
+            action_class: "engage".into(),
+            target_id: "threat-t72".into(),
+            target_confidence: 0.5,
+            collateral_risk_score: 0.05,
+            operator_role: "pilot".into(),
+            mission_id: "m-001".into(),
         };
-        assert!(matches!(p.evaluate(&ctx, &h).unwrap(), PolicyDecision::Escalate { .. }));
+        assert!(matches!(
+            p.evaluate(&ctx, &h).unwrap(),
+            PolicyDecision::Escalate { .. }
+        ));
     }
 }

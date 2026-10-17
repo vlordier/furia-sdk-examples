@@ -22,63 +22,95 @@ struct RadarAdapter {
 
 impl RadarAdapter {
     fn new() -> Self {
-        Self { classification_rules: vec![("tank", "hostile"), ("truck", "unknown")] }
+        Self {
+            classification_rules: vec![("tank", "hostile"), ("truck", "unknown")],
+        }
     }
 }
 
 impl SensorAdapter for RadarAdapter {
-    fn ingest(&self, payload: &[u8], _handle: &ModuleHandle) -> Result<Vec<TrackIngest>, AdapterError> {
-        let text = std::str::from_utf8(payload).map_err(|e| AdapterError::IngestFailed(e.to_string()))?;
+    fn ingest(
+        &self,
+        payload: &[u8],
+        _handle: &ModuleHandle,
+    ) -> Result<Vec<TrackIngest>, AdapterError> {
+        let text =
+            std::str::from_utf8(payload).map_err(|e| AdapterError::IngestFailed(e.to_string()))?;
         let mut tracks = vec![];
         for line in text.lines() {
             let parts: Vec<&str> = line.split(',').collect();
             if parts.len() < 4 {
-                return Err(AdapterError::IngestFailed("expected CSV: id,lat,lon,alt".into()));
+                return Err(AdapterError::IngestFailed(
+                    "expected CSV: id,lat,lon,alt".into(),
+                ));
             }
             let parse_f64 = |s: &str, msg: &str| -> Result<f64, AdapterError> {
-                s.parse().map_err(|_| AdapterError::IngestFailed(msg.into()))
+                s.parse()
+                    .map_err(|_| AdapterError::IngestFailed(msg.into()))
             };
             tracks.push(TrackIngest {
                 track_id: parts[0].into(),
                 latitude: parse_f64(parts[1], "bad latitude")?,
                 longitude: parse_f64(parts[2], "bad longitude")?,
                 altitude: Some(parts[3].parse().unwrap_or(0.0)),
-                velocity: None, heading: None, classification: None,
-                confidence: 1.0, sensor_type: "radar".into(),
+                velocity: None,
+                heading: None,
+                classification: None,
+                confidence: 1.0,
+                sensor_type: "radar".into(),
             });
         }
         Ok(tracks)
     }
 
-    fn classify(&self, track: &TrackIngest, _handle: &ModuleHandle) -> Result<TrackClassification, AdapterError> {
+    fn classify(
+        &self,
+        track: &TrackIngest,
+        _handle: &ModuleHandle,
+    ) -> Result<TrackClassification, AdapterError> {
         for (pattern, classification) in &self.classification_rules {
             if track.track_id.contains(pattern) {
                 return Ok(TrackClassification {
                     track_id: track.track_id.clone(),
                     classification: classification.to_string(),
-                    sub_classification: None, confidence: HIGH_CONFIDENCE as f32,
+                    sub_classification: None,
+                    confidence: HIGH_CONFIDENCE as f32,
                 });
             }
         }
         Ok(TrackClassification {
             track_id: track.track_id.clone(),
-            classification: "friendly".into(), sub_classification: None, confidence: MEDIUM_CONFIDENCE as f32,
+            classification: "friendly".into(),
+            sub_classification: None,
+            confidence: MEDIUM_CONFIDENCE as f32,
         })
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
     let radar = RadarAdapter::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let csv = format!("tank-001,{:.2},{:.2},150\ntruck-001,48.86,2.36,0\n", DEMO_LAT, DEMO_LON);
+    let csv = format!(
+        "tank-001,{:.2},{:.2},150\ntruck-001,48.86,2.36,0\n",
+        DEMO_LAT, DEMO_LON
+    );
 
     println!("=== Radar Ingest ===");
-    let tracks = radar.ingest(csv.as_bytes(), &handle).expect("radar ingest should parse valid CSV");
+    let tracks = radar
+        .ingest(csv.as_bytes(), &handle)
+        .expect("radar ingest should parse valid CSV");
     for t in &tracks {
-        let cls = radar.classify(t, &handle).expect("classification should succeed for valid track");
-        println!(" {} @ ({:.4}, {:.4}) → {}", t.track_id, t.latitude, t.longitude, cls.classification);
+        let cls = radar
+            .classify(t, &handle)
+            .expect("classification should succeed for valid track");
+        println!(
+            " {} @ ({:.4}, {:.4}) → {}",
+            t.track_id, t.latitude, t.longitude, cls.classification
+        );
     }
 }
 
@@ -99,7 +131,17 @@ mod tests {
     fn test_classify_tank_as_hostile() {
         let r = RadarAdapter::new();
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let t = TrackIngest { track_id: "tank-001".into(), latitude: 0.0, longitude: 0.0, altitude: None, velocity: None, heading: None, classification: None, confidence: 1.0, sensor_type: "t".into() };
+        let t = TrackIngest {
+            track_id: "tank-001".into(),
+            latitude: 0.0,
+            longitude: 0.0,
+            altitude: None,
+            velocity: None,
+            heading: None,
+            classification: None,
+            confidence: 1.0,
+            sensor_type: "t".into(),
+        };
         let c = r.classify(&t, &h).unwrap();
         assert_eq!(c.classification, "hostile");
     }

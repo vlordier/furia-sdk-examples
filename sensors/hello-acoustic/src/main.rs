@@ -6,7 +6,9 @@
 
 use std::time::Duration;
 
-use furia_sdk::acoustic::{AcousticPropagation, AcousticProvider, AcousticSnapshot, SonarConfig, SonarDetection, SonarType};
+use furia_sdk::acoustic::{
+    AcousticPropagation, AcousticProvider, AcousticSnapshot, SonarConfig, SonarDetection, SonarType,
+};
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::{Scenario, SimEvent};
 use uuid::Uuid;
@@ -23,7 +25,13 @@ struct PassiveSonar {
 }
 
 impl PassiveSonar {
-    fn new() -> Self { Self { configs: vec![], detections: vec![], t_ms: 0 } }
+    fn new() -> Self {
+        Self {
+            configs: vec![],
+            detections: vec![],
+            t_ms: 0,
+        }
+    }
 }
 
 impl AcousticProvider for PassiveSonar {
@@ -47,14 +55,18 @@ impl AcousticProvider for PassiveSonar {
 
     fn propagation_conditions(&self, lat: f64, lon: f64, depth_m: f64) -> AcousticPropagation {
         AcousticPropagation {
-            lat, lon, depth_m,
+            lat,
+            lon,
+            depth_m,
             transmission_loss_db: 15.0 + depth_m * 0.02,
             convergence_zone_km: 35.0,
             shadow_zones: vec![],
         }
     }
 
-    fn sonar_detections(&self) -> Vec<SonarDetection> { self.detections.clone() }
+    fn sonar_detections(&self) -> Vec<SonarDetection> {
+        self.detections.clone()
+    }
 
     fn snapshot(&self) -> AcousticSnapshot {
         AcousticSnapshot {
@@ -65,26 +77,44 @@ impl AcousticProvider for PassiveSonar {
         }
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
     let mut sonar = PassiveSonar::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let scenario = Scenario { id: "usw".into(), name: "USW Demo".into(), duration_secs: 7200, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+    let scenario = Scenario {
+        id: "usw".into(),
+        name: "USW Demo".into(),
+        duration_secs: 7200,
+        order_of_battle: serde_json::json!({}),
+        timeline: vec![],
+        environment: serde_json::json!({}),
+    };
     sonar.init(&scenario, &handle);
 
     println!("=== Acoustic / Sonar ===");
     sonar.configure_sonar(SonarConfig {
-        platform_id: "p-3c".into(), type_: SonarType::Passive,
-        source_level_db: 0.0, frequency_hz: 1000.0, beam_width_deg: 60.0,
+        platform_id: "p-3c".into(),
+        type_: SonarType::Passive,
+        source_level_db: 0.0,
+        frequency_hz: 1000.0,
+        beam_width_deg: 60.0,
     });
     sonar.tick_acoustics(Duration::from_secs(30));
 
     let prop = sonar.propagation_conditions(DEMO_LAT, DEMO_LON, 100.0);
-    println!(" Propagation loss at 100m: {:.1} dB", prop.transmission_loss_db);
+    println!(
+        " Propagation loss at 100m: {:.1} dB",
+        prop.transmission_loss_db
+    );
     for d in sonar.sonar_detections() {
-        println!(" Detection: {} ({}) conf={:.2}", d.contact_id, d.classification, d.confidence);
+        println!(
+            " Detection: {} ({}) conf={:.2}",
+            d.contact_id, d.classification, d.confidence
+        );
     }
 }
 
@@ -95,7 +125,13 @@ mod tests {
     #[test]
     fn test_configure_sonar_adds_config() {
         let mut s = PassiveSonar::new();
-        let cfg = SonarConfig { platform_id: "p1".into(), type_: SonarType::Active, source_level_db: 200.0, frequency_hz: 5000.0, beam_width_deg: 30.0 };
+        let cfg = SonarConfig {
+            platform_id: "p1".into(),
+            type_: SonarType::Active,
+            source_level_db: 200.0,
+            frequency_hz: 5000.0,
+            beam_width_deg: 30.0,
+        };
         s.configure_sonar(cfg);
         assert_eq!(s.configs.len(), 1);
     }

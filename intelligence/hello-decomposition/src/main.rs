@@ -20,24 +20,31 @@ const HIGH_CONFIDENCE: f64 = 0.85;
 struct F2T2EAStrategy;
 
 impl DecompositionStrategy for F2T2EAStrategy {
-    fn decompose(&self, intent: &str, _handle: &ModuleHandle) -> Result<Vec<SubMission>, DecompositionError> {
+    fn decompose(
+        &self,
+        intent: &str,
+        _handle: &ModuleHandle,
+    ) -> Result<Vec<SubMission>, DecompositionError> {
         // Parse the intent roughly — for demo we use a fixed pattern
         let target = intent.split(" at ").next().unwrap_or("unknown");
         Ok(vec![
             SubMission {
-                id: "sub-find".into(), objective: format!("Find {}", target),
+                id: "sub-find".into(),
+                objective: format!("Find {}", target),
                 asset_ids: vec!["uav-001".into()],
                 waypoints: vec![(DEMO_LAT, DEMO_LON, Some(500.0))],
                 constraints: serde_json::json!({"max_alt_m": 1000}),
             },
             SubMission {
-                id: "sub-fix".into(), objective: format!("Fix {} position", target),
+                id: "sub-fix".into(),
+                objective: format!("Fix {} position", target),
                 asset_ids: vec!["uav-001".into()],
                 waypoints: vec![(DEMO_LAT, DEMO_LON, Some(300.0))],
                 constraints: serde_json::json!({"loiter_s": 300}),
             },
             SubMission {
-                id: "sub-engage".into(), objective: format!("Engage {}", target),
+                id: "sub-engage".into(),
+                objective: format!("Engage {}", target),
                 asset_ids: vec!["strike-001".into()],
                 waypoints: vec![(DEMO_LAT, DEMO_LON, Some(0.0))],
                 constraints: serde_json::json!({"weapon": "pgm"}),
@@ -45,7 +52,11 @@ impl DecompositionStrategy for F2T2EAStrategy {
         ])
     }
 
-    fn score_coa(&self, _mission_id: &str, _handle: &ModuleHandle) -> Result<CoAScore, DecompositionError> {
+    fn score_coa(
+        &self,
+        _mission_id: &str,
+        _handle: &ModuleHandle,
+    ) -> Result<CoAScore, DecompositionError> {
         Ok(CoAScore {
             numeric_score: 0.78,
             factors: vec![
@@ -56,20 +67,32 @@ impl DecompositionStrategy for F2T2EAStrategy {
         })
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
     let strategy = F2T2EAStrategy;
     let handle = ModuleHandle::new_test(Uuid::new_v4());
 
-    println!("=== Decomposition: 'destroy T72 at {:.2}N {:.2}E' ===", DEMO_LAT, DEMO_LON);
-    let missions = strategy.decompose(&format!("T72 at {:.2}N {:.2}E", DEMO_LAT, DEMO_LON), &handle).expect("decompose should succeed for valid intent");
+    println!(
+        "=== Decomposition: 'destroy T72 at {:.2}N {:.2}E' ===",
+        DEMO_LAT, DEMO_LON
+    );
+    let missions = strategy
+        .decompose(
+            &format!("T72 at {:.2}N {:.2}E", DEMO_LAT, DEMO_LON),
+            &handle,
+        )
+        .expect("decompose should succeed for valid intent");
     for m in &missions {
         println!(" {} — {} (assets: {:?})", m.id, m.objective, m.asset_ids);
     }
 
-    let score = strategy.score_coa("mission-001", &handle).expect("COA scoring should succeed");
+    let score = strategy
+        .score_coa("mission-001", &handle)
+        .expect("COA scoring should succeed");
     println!("\n=== COA Score: {:.2} ===", score.numeric_score);
     for (factor, val) in &score.factors {
         println!(" {}: {:.2}", factor, val);
@@ -84,7 +107,12 @@ mod tests {
     fn test_decompose_produces_sub_missions() {
         let s = F2T2EAStrategy;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let ms = s.decompose(&format!("destroy tank at {:.2}N {:.2}E", DEMO_LAT, DEMO_LON), &h).unwrap();
+        let ms = s
+            .decompose(
+                &format!("destroy tank at {:.2}N {:.2}E", DEMO_LAT, DEMO_LON),
+                &h,
+            )
+            .unwrap();
         assert_eq!(ms.len(), 3);
     }
 

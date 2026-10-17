@@ -15,7 +15,11 @@ const HIGH_CONFIDENCE: f64 = 0.85;
 struct ProximityFusion;
 
 impl FusionEngine for ProximityFusion {
-    fn correlate(&self, tracks: &[String], _handle: &ModuleHandle) -> Result<Vec<TrackCorrelation>, FusionError> {
+    fn correlate(
+        &self,
+        tracks: &[String],
+        _handle: &ModuleHandle,
+    ) -> Result<Vec<TrackCorrelation>, FusionError> {
         // Simple heuristic: if two track IDs share a common prefix,
         // they refer to the same entity.
         if tracks.len() < 2 {
@@ -26,10 +30,18 @@ impl FusionEngine for ProximityFusion {
             for b in tracks.iter().skip(i + 1) {
                 let prefix_a = a.split('-').next().unwrap_or(a);
                 let prefix_b = b.split('-').next().unwrap_or(b);
-                let ct = if prefix_a == prefix_b { CorrelationType::SameEntity } else { CorrelationType::Unrelated };
+                let ct = if prefix_a == prefix_b {
+                    CorrelationType::SameEntity
+                } else {
+                    CorrelationType::Unrelated
+                };
                 results.push(TrackCorrelation {
                     track_ids: vec![a.clone(), b.clone()],
-                    confidence: if ct == CorrelationType::SameEntity { HIGH_CONFIDENCE } else { 0.1 },
+                    confidence: if ct == CorrelationType::SameEntity {
+                        HIGH_CONFIDENCE
+                    } else {
+                        0.1
+                    },
                     correlation_type: ct,
                     rationale: format!("prefix match: {} vs {}", prefix_a, prefix_b),
                 });
@@ -38,7 +50,9 @@ impl FusionEngine for ProximityFusion {
         Ok(results)
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
@@ -47,15 +61,25 @@ fn main() {
 
     println!("=== Track Fusion ===");
     // Same entity — both start with "radar"
-    let correlated = fusion.correlate(&["radar-track-1".into(), "radar-track-2".into()], &handle).expect("correlation should succeed for valid tracks");
+    let correlated = fusion
+        .correlate(&["radar-track-1".into(), "radar-track-2".into()], &handle)
+        .expect("correlation should succeed for valid tracks");
     for c in &correlated {
-        println!(" {:?} — ids={:?} conf={:.2}", c.correlation_type, c.track_ids, c.confidence);
+        println!(
+            " {:?} — ids={:?} conf={:.2}",
+            c.correlation_type, c.track_ids, c.confidence
+        );
     }
 
     // Unrelated — different prefixes
-    let unrelated = fusion.correlate(&["radar-1".into(), "esm-1".into()], &handle).expect("correlation should succeed for unrelated tracks");
+    let unrelated = fusion
+        .correlate(&["radar-1".into(), "esm-1".into()], &handle)
+        .expect("correlation should succeed for unrelated tracks");
     for c in &unrelated {
-        println!(" {:?} — ids={:?} conf={:.2}", c.correlation_type, c.track_ids, c.confidence);
+        println!(
+            " {:?} — ids={:?} conf={:.2}",
+            c.correlation_type, c.track_ids, c.confidence
+        );
     }
 }
 
@@ -67,16 +91,24 @@ mod tests {
     fn test_same_prefix_correlates() {
         let f = ProximityFusion;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let r = f.correlate(&["radar-a".into(), "radar-b".into()], &h).unwrap();
-        assert!(r.iter().any(|c| c.correlation_type == CorrelationType::SameEntity));
+        let r = f
+            .correlate(&["radar-a".into(), "radar-b".into()], &h)
+            .unwrap();
+        assert!(r
+            .iter()
+            .any(|c| c.correlation_type == CorrelationType::SameEntity));
     }
 
     #[test]
     fn test_different_prefix_unrelated() {
         let f = ProximityFusion;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let r = f.correlate(&["radar-1".into(), "esm-1".into()], &h).unwrap();
-        assert!(r.iter().any(|c| c.correlation_type == CorrelationType::Unrelated));
+        let r = f
+            .correlate(&["radar-1".into(), "esm-1".into()], &h)
+            .unwrap();
+        assert!(r
+            .iter()
+            .any(|c| c.correlation_type == CorrelationType::Unrelated));
     }
 
     #[test]

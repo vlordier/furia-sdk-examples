@@ -7,7 +7,9 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
-use furia_sdk::logistics::{ConvoyState, LogisticsProvider, LogisticsSnapshot, SupplyChainNode, VehicleLogistics};
+use furia_sdk::logistics::{
+    ConvoyState, LogisticsProvider, LogisticsSnapshot, SupplyChainNode, VehicleLogistics,
+};
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::{Scenario, SimEvent};
 use uuid::Uuid;
@@ -32,17 +34,27 @@ struct ConvoyLogistics {
 impl ConvoyLogistics {
     fn new() -> Self {
         let mut vehicles = HashMap::new();
-        vehicles.insert("truck-001".into(), VehicleLogistics {
-            vehicle_id: "truck-001".into(), fuel_liters: 200.0, max_fuel_liters: 200.0,
-            ammo_remaining: 500.0, ammo_capacity: 500.0, maintenance_hours: 0.0, health_pct: 100.0,
-        });
+        vehicles.insert(
+            "truck-001".into(),
+            VehicleLogistics {
+                vehicle_id: "truck-001".into(),
+                fuel_liters: 200.0,
+                max_fuel_liters: 200.0,
+                ammo_remaining: 500.0,
+                ammo_capacity: 500.0,
+                maintenance_hours: 0.0,
+                health_pct: 100.0,
+            },
+        );
         Self {
             vehicles,
             convoys: vec![ConvoyState {
                 convoy_id: "convoy-a".into(),
                 vehicles: vec!["truck-001".into()],
-                position: (DEMO_LAT, DEMO_LON), speed_kph: 40.0,
-                destination_id: "base-bravo".into(), fuel_consumed_liters: 0.0,
+                position: (DEMO_LAT, DEMO_LON),
+                speed_kph: 40.0,
+                destination_id: "base-bravo".into(),
+                fuel_consumed_liters: 0.0,
             }],
         }
     }
@@ -60,7 +72,8 @@ impl LogisticsProvider for ConvoyLogistics {
                 v.fuel_liters = (v.fuel_liters - burn).max(0.0);
                 if v.fuel_liters < 20.0 {
                     events.push(SimEvent {
-                        event_type: "low_fuel".into(), source: "truck-001".into(),
+                        event_type: "low_fuel".into(),
+                        source: "truck-001".into(),
                         target: Some("convoy-a".into()),
                         params: serde_json::json!({"fuel_liters": v.fuel_liters}),
                         timestamp_ms: 0,
@@ -75,7 +88,9 @@ impl LogisticsProvider for ConvoyLogistics {
         self.vehicles.get(vehicle_id).cloned()
     }
 
-    fn supply_node(&self, _node_id: &str) -> Option<SupplyChainNode> { None }
+    fn supply_node(&self, _node_id: &str) -> Option<SupplyChainNode> {
+        None
+    }
 
     fn snapshot(&self) -> LogisticsSnapshot {
         LogisticsSnapshot {
@@ -86,20 +101,35 @@ impl LogisticsProvider for ConvoyLogistics {
         }
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
     let mut logi = ConvoyLogistics::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let scenario = Scenario { id: "logi-test".into(), name: "Logi Demo".into(), duration_secs: DEMO_DURATION_SECS, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+    let scenario = Scenario {
+        id: "logi-test".into(),
+        name: "Logi Demo".into(),
+        duration_secs: DEMO_DURATION_SECS,
+        order_of_battle: serde_json::json!({}),
+        timeline: vec![],
+        environment: serde_json::json!({}),
+    };
     logi.init(&scenario, &handle);
 
     println!("=== Logistics Simulation ===");
     for _ in 0..5 {
         let events = logi.tick_consumption(Duration::from_secs(300));
-        let v = logi.vehicle_state("truck-001").expect("truck-001 should be registered");
-        println!(" truck-001 fuel: {:.1}L — events: {}", v.fuel_liters, events.len());
+        let v = logi
+            .vehicle_state("truck-001")
+            .expect("truck-001 should be registered");
+        println!(
+            " truck-001 fuel: {:.1}L — events: {}",
+            v.fuel_liters,
+            events.len()
+        );
     }
 }
 
@@ -117,7 +147,17 @@ mod tests {
     #[test]
     fn test_tick_burns_fuel() {
         let mut l = ConvoyLogistics::new();
-        l.init(&Scenario { id: "t".into(), name: "t".into(), duration_secs: 60, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) }, &ModuleHandle::new_test(Uuid::new_v4()));
+        l.init(
+            &Scenario {
+                id: "t".into(),
+                name: "t".into(),
+                duration_secs: 60,
+                order_of_battle: serde_json::json!({}),
+                timeline: vec![],
+                environment: serde_json::json!({}),
+            },
+            &ModuleHandle::new_test(Uuid::new_v4()),
+        );
         l.tick_consumption(Duration::from_secs(600));
         let v = l.vehicle_state("truck-001").unwrap();
         assert!(v.fuel_liters < 200.0);

@@ -6,7 +6,10 @@
 
 use std::time::Duration;
 
-use furia_sdk::civilian_density::{CivilianDensityProvider, CivilianMovement, CivilianSnapshot, CollateralEstimate, PopulationRegion};
+use furia_sdk::civilian_density::{
+    CivilianDensityProvider, CivilianMovement, CivilianSnapshot, CollateralEstimate,
+    PopulationRegion,
+};
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::simulation::Scenario;
 use uuid::Uuid;
@@ -41,11 +44,24 @@ impl CivilianDensityProvider for UrbanPopulation {
     fn tick_population(&mut self, _dt: Duration) {}
 
     fn region_density(&self, region_id: &str) -> Option<PopulationRegion> {
-        self.regions.iter().find(|r| r.region_id == region_id).cloned()
+        self.regions
+            .iter()
+            .find(|r| r.region_id == region_id)
+            .cloned()
     }
 
-    fn estimate_collateral(&self, _lat: f64, _lon: f64, weapon_radius_m: f64, weapon_type: &str) -> CollateralEstimate {
-        let density = self.regions.first().map(|r| r.density_per_km2 * r.time_of_day_multiplier).unwrap_or(0.0);
+    fn estimate_collateral(
+        &self,
+        _lat: f64,
+        _lon: f64,
+        weapon_radius_m: f64,
+        weapon_type: &str,
+    ) -> CollateralEstimate {
+        let density = self
+            .regions
+            .first()
+            .map(|r| r.density_per_km2 * r.time_of_day_multiplier)
+            .unwrap_or(0.0);
         let kz_area_km2 = std::f64::consts::PI * (weapon_radius_m / 1000.0).powi(2);
         let estimated = (density * kz_area_km2).round() as u64;
         CollateralEstimate {
@@ -61,30 +77,48 @@ impl CivilianDensityProvider for UrbanPopulation {
         CivilianSnapshot {
             regions: self.regions.clone(),
             active_movements: vec![CivilianMovement {
-                movement_id: "mov-1".into(), from_region: "downtown".into(),
-                to_region: "suburb".into(), estimated_count: 500,
-                confidence: 0.7, timeframe_ms: 3_600_000,
+                movement_id: "mov-1".into(),
+                from_region: "downtown".into(),
+                to_region: "suburb".into(),
+                estimated_count: 500,
+                confidence: 0.7,
+                timeframe_ms: 3_600_000,
             }],
             risk_zones: vec![],
         }
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
     let mut pop = UrbanPopulation::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
-    let scenario = Scenario { id: "civ".into(), name: "Civilian Demo".into(), duration_secs: DEMO_DURATION_SECS, order_of_battle: serde_json::json!({}), timeline: vec![], environment: serde_json::json!({}) };
+    let scenario = Scenario {
+        id: "civ".into(),
+        name: "Civilian Demo".into(),
+        duration_secs: DEMO_DURATION_SECS,
+        order_of_battle: serde_json::json!({}),
+        timeline: vec![],
+        environment: serde_json::json!({}),
+    };
     pop.init(&scenario, &handle);
 
     println!("=== Civilian Density ===");
     if let Some(r) = pop.region_density("downtown") {
-        println!(" {}: {} ppl, {:.0}/km2", r.region_id, r.estimated_population, r.density_per_km2);
+        println!(
+            " {}: {} ppl, {:.0}/km2",
+            r.region_id, r.estimated_population, r.density_per_km2
+        );
     }
 
     let ce = pop.estimate_collateral(DEMO_LAT + 0.005, DEMO_LON + 0.005, 50.0, "Mk82");
-    println!(" Collateral estimate: {} civilians in KZ — proportional: {}", ce.estimated_civilians_in_kz, ce.proportional_ok);
+    println!(
+        " Collateral estimate: {} civilians in KZ — proportional: {}",
+        ce.estimated_civilians_in_kz, ce.proportional_ok
+    );
 }
 
 #[cfg(test)]

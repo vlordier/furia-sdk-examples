@@ -17,7 +17,9 @@ struct AssetStatusPanel;
 
 impl UiPlugin for AssetStatusPanel {
     fn render(&self, props: &UiPluginProps, _handle: &ModuleHandle) -> UiPluginOutput {
-        let asset_info = props.selected_entity.as_ref()
+        let asset_info = props
+            .selected_entity
+            .as_ref()
             .and_then(|e| e.get("entity_id").and_then(|id| id.as_str()))
             .unwrap_or("none");
         UiPluginOutput {
@@ -34,7 +36,9 @@ impl UiPlugin for AssetStatusPanel {
         }
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
@@ -44,7 +48,10 @@ fn main() {
     let meta = plugin.metadata();
     println!(" Name: {}", meta.name);
     println!(" Description: {}", meta.description);
-    println!(" Slot: {} (min: {}x{})", meta.preferred_slot, meta.min_dimensions.0, meta.min_dimensions.1);
+    println!(
+        " Slot: {} (min: {}x{})",
+        meta.preferred_slot, meta.min_dimensions.0, meta.min_dimensions.1
+    );
 
     let props = UiPluginProps {
         map_viewport: serde_json::json!({"zoom": 12, "center": [DEMO_LAT, DEMO_LON]}),
@@ -52,7 +59,10 @@ fn main() {
         operator_role: "pilot".into(),
         screen_dimensions: (1920, 1080),
     };
-    let output = plugin.render(&props, &furia_sdk::module_handle::ModuleHandle::new_test(uuid::Uuid::new_v4()));
+    let output = plugin.render(
+        &props,
+        &furia_sdk::module_handle::ModuleHandle::new_test(uuid::Uuid::new_v4()),
+    );
     println!(" Rendered: {}", output.html_asset_path);
 }
 
@@ -71,8 +81,10 @@ mod tests {
     fn test_render_with_selected_entity() {
         let p = AssetStatusPanel;
         let props = UiPluginProps {
-            map_viewport: serde_json::json!({}), selected_entity: Some(serde_json::json!({"entity_id": "uav-1"})),
-            operator_role: "pilot".into(), screen_dimensions: (1920, 1080),
+            map_viewport: serde_json::json!({}),
+            selected_entity: Some(serde_json::json!({"entity_id": "uav-1"})),
+            operator_role: "pilot".into(),
+            screen_dimensions: (1920, 1080),
         };
         let out = p.render(&props, &ModuleHandle::new_test(Uuid::new_v4()));
         assert!(out.html_asset_path.contains("uav-1"));
@@ -82,8 +94,10 @@ mod tests {
     fn test_render_without_selected_entity() {
         let p = AssetStatusPanel;
         let props = UiPluginProps {
-            map_viewport: serde_json::json!({}), selected_entity: None,
-            operator_role: "pilot".into(), screen_dimensions: (1920, 1080),
+            map_viewport: serde_json::json!({}),
+            selected_entity: None,
+            operator_role: "pilot".into(),
+            screen_dimensions: (1920, 1080),
         };
         let out = p.render(&props, &ModuleHandle::new_test(Uuid::new_v4()));
         assert!(out.html_asset_path.contains("none"));

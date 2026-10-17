@@ -1,7 +1,9 @@
 //! Demonstrates the `KillChainOrchestrator` trait — automating the
 //! Detect-Deliberate-Identify-Engage-Assess (D-DIL) chain for drone threats.
 
-use furia_sdk::cuas::{DroneClass, DroneTrack, KillAuthority, KillChainState, KillChainStep, ThreatAssessment};
+use furia_sdk::cuas::{
+    DroneClass, DroneTrack, KillAuthority, KillChainState, KillChainStep, ThreatAssessment,
+};
 use furia_sdk::kill_chain::KillChainOrchestrator;
 use furia_sdk::module_handle::{ModuleHandle, ModuleHealth};
 use furia_sdk::platform::ThreatLevel;
@@ -19,7 +21,10 @@ struct DemoKillChain {
 
 impl DemoKillChain {
     fn new() -> Self {
-        Self { states: HashMap::new(), scenario: None }
+        Self {
+            states: HashMap::new(),
+            scenario: None,
+        }
     }
 }
 
@@ -32,8 +37,11 @@ impl KillChainOrchestrator for DemoKillChain {
         let step = if assessment.threat_score >= 0.8 {
             KillChainStep::Lethal(furia_sdk::cuas::EngagementPlan {
                 plan_id: format!("ep-{}", track.track_id),
-                generated_at_ms: 1000, pairings: vec![], total_pk: 0.0,
-                collateral_risk: 0.0, approved: false,
+                generated_at_ms: 1000,
+                pairings: vec![],
+                total_pk: 0.0,
+                collateral_risk: 0.0,
+                approved: false,
             })
         } else if assessment.threat_score >= 0.5 {
             KillChainStep::Identify
@@ -43,7 +51,8 @@ impl KillChainOrchestrator for DemoKillChain {
         KillChainState {
             track_id: track.track_id.clone(),
             current_step: step,
-            started_at_ms: 0, last_updated_ms: 1000,
+            started_at_ms: 0,
+            last_updated_ms: 1000,
             authority: KillAuthority::SemiAutomatic,
         }
     }
@@ -58,29 +67,46 @@ impl KillChainOrchestrator for DemoKillChain {
         self.states.get(track_id).cloned()
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
     let mut kc = DemoKillChain::new();
     let handle = ModuleHandle::new_test(Uuid::new_v4());
     let scenario = Scenario {
-        id: "scenario-001".into(), name: "demo".into(), duration_secs: 3600,
-        order_of_battle: serde_json::json!({}), timeline: vec![],
+        id: "scenario-001".into(),
+        name: "demo".into(),
+        duration_secs: 3600,
+        order_of_battle: serde_json::json!({}),
+        timeline: vec![],
         environment: serde_json::json!({}),
     };
     kc.init(&scenario, &handle);
 
     let track = DroneTrack {
-        track_id: "DRONE-H".into(), lat: DEMO_LAT, lon: DEMO_LON, altitude_m: 600.0,
-        speed_kph: 120.0, heading_deg: 180.0, drone_class: DroneClass::FixedWingMedium,
-        confidence: 0.92, sensor_type: "radar".into(), first_seen_ms: 0, last_seen_ms: 3000,
+        track_id: "DRONE-H".into(),
+        lat: DEMO_LAT,
+        lon: DEMO_LON,
+        altitude_m: 600.0,
+        speed_kph: 120.0,
+        heading_deg: 180.0,
+        drone_class: DroneClass::FixedWingMedium,
+        confidence: 0.92,
+        sensor_type: "radar".into(),
+        first_seen_ms: 0,
+        last_seen_ms: 3000,
     };
 
     let assessment = ThreatAssessment {
-        track_id: track.track_id.clone(), drone_class: track.drone_class.clone(),
-        threat_score: 0.85, threat_level: ThreatLevel::Critical, time_to_impact_s: Some(45.0),
-        distance_to_asset_km: 2.0, closest_asset: "BASE-A".into(),
+        track_id: track.track_id.clone(),
+        drone_class: track.drone_class.clone(),
+        threat_score: 0.85,
+        threat_level: ThreatLevel::Critical,
+        time_to_impact_s: Some(45.0),
+        distance_to_asset_km: 2.0,
+        closest_asset: "BASE-A".into(),
         rationale: "High-speed fixed-wing on intercept course".into(),
     };
 
@@ -97,24 +123,40 @@ mod tests {
 
     fn make_track() -> DroneTrack {
         DroneTrack {
-            track_id: "T1".into(), lat: 0.0, lon: 0.0, altitude_m: 500.0, speed_kph: 100.0,
-            heading_deg: 0.0, drone_class: DroneClass::FixedWingMedium, confidence: 0.9,
-            sensor_type: "r".into(), first_seen_ms: 0, last_seen_ms: 0,
+            track_id: "T1".into(),
+            lat: 0.0,
+            lon: 0.0,
+            altitude_m: 500.0,
+            speed_kph: 100.0,
+            heading_deg: 0.0,
+            drone_class: DroneClass::FixedWingMedium,
+            confidence: 0.9,
+            sensor_type: "r".into(),
+            first_seen_ms: 0,
+            last_seen_ms: 0,
         }
     }
 
     fn make_assessment(score: f64) -> ThreatAssessment {
         ThreatAssessment {
-            track_id: "T1".into(), drone_class: DroneClass::FixedWingMedium, threat_score: score,
-            threat_level: ThreatLevel::High, time_to_impact_s: Some(60.0), distance_to_asset_km: 3.0,
-            closest_asset: "A1".into(), rationale: "test".into(),
+            track_id: "T1".into(),
+            drone_class: DroneClass::FixedWingMedium,
+            threat_score: score,
+            threat_level: ThreatLevel::High,
+            time_to_impact_s: Some(60.0),
+            distance_to_asset_km: 3.0,
+            closest_asset: "A1".into(),
+            rationale: "test".into(),
         }
     }
 
     fn make_scenario() -> Scenario {
         Scenario {
-            id: "s1".into(), name: "test".into(), duration_secs: 3600,
-            order_of_battle: serde_json::json!({}), timeline: vec![],
+            id: "s1".into(),
+            name: "test".into(),
+            duration_secs: 3600,
+            order_of_battle: serde_json::json!({}),
+            timeline: vec![],
             environment: serde_json::json!({}),
         }
     }
@@ -142,6 +184,9 @@ mod tests {
         // Manually insert since process doesn't store
         kc.states.insert("T1".into(), state);
         kc.authorize("T1", KillAuthority::AutomaticLethal);
-        assert_eq!(kc.state("T1").unwrap().authority, KillAuthority::AutomaticLethal);
+        assert_eq!(
+            kc.state("T1").unwrap().authority,
+            KillAuthority::AutomaticLethal
+        );
     }
 }

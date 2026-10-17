@@ -16,7 +16,9 @@ struct DemoAirspace {
 
 impl DemoAirspace {
     fn new() -> Self {
-        Self { volumes: HashMap::new() }
+        Self {
+            volumes: HashMap::new(),
+        }
     }
 }
 
@@ -28,15 +30,20 @@ impl AirspaceManager for DemoAirspace {
     }
 
     fn check(&self, track: &DroneTrack) -> Vec<AirspaceVolume> {
-        self.volumes.values().filter(|v| {
-            track.altitude_m >= v.min_altitude_m && track.altitude_m <= v.max_altitude_m
-        }).cloned().collect()
+        self.volumes
+            .values()
+            .filter(|v| {
+                track.altitude_m >= v.min_altitude_m && track.altitude_m <= v.max_altitude_m
+            })
+            .cloned()
+            .collect()
     }
 
     fn is_in_no_fly_zone(&self, _lat: f64, _lon: f64, alt_m: f64) -> bool {
         self.volumes.values().any(|v| {
             v.volume_type == AirspaceVolumeType::NoFlyZone
-                && alt_m >= v.min_altitude_m && alt_m <= v.max_altitude_m
+                && alt_m >= v.min_altitude_m
+                && alt_m <= v.max_altitude_m
         })
     }
 
@@ -44,7 +51,9 @@ impl AirspaceManager for DemoAirspace {
         self.volumes.values().cloned().collect()
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
@@ -66,14 +75,27 @@ fn main() {
 
     let track = DroneTrack {
         track_id: "DRONE-01".into(),
-        lat: DEMO_LAT, lon: DEMO_LON, altitude_m: 500.0, speed_kph: 40.0, heading_deg: 90.0,
-        drone_class: DroneClass::QuadcopterMedium, confidence: 0.85, sensor_type: "radar".into(),
-        first_seen_ms: 0, last_seen_ms: 1000,
+        lat: DEMO_LAT,
+        lon: DEMO_LON,
+        altitude_m: 500.0,
+        speed_kph: 40.0,
+        heading_deg: 90.0,
+        drone_class: DroneClass::QuadcopterMedium,
+        confidence: 0.85,
+        sensor_type: "radar".into(),
+        first_seen_ms: 0,
+        last_seen_ms: 1000,
     };
 
     println!("=== Airspace Check ===");
-    println!(" Track {} at {}m altitude", track.track_id, track.altitude_m);
-    println!(" In no-fly zone: {}", airspace.is_in_no_fly_zone(track.lat, track.lon, track.altitude_m));
+    println!(
+        " Track {} at {}m altitude",
+        track.track_id, track.altitude_m
+    );
+    println!(
+        " In no-fly zone: {}",
+        airspace.is_in_no_fly_zone(track.lat, track.lon, track.altitude_m)
+    );
     println!(" Volumes affecting: {}", airspace.check(&track).len());
 }
 
@@ -83,17 +105,30 @@ mod tests {
 
     fn make_volume(id: &str, vtype: AirspaceVolumeType) -> AirspaceVolume {
         AirspaceVolume {
-            volume_id: id.into(), volume_type: vtype, polygon: vec![],
-            min_altitude_m: 0.0, max_altitude_m: 1000.0,
-            active_from_ms: 0, active_until_ms: u64::MAX, label: id.into(),
+            volume_id: id.into(),
+            volume_type: vtype,
+            polygon: vec![],
+            min_altitude_m: 0.0,
+            max_altitude_m: 1000.0,
+            active_from_ms: 0,
+            active_until_ms: u64::MAX,
+            label: id.into(),
         }
     }
 
     fn make_track(alt: f64) -> DroneTrack {
         DroneTrack {
-            track_id: "T1".into(), lat: 0.0, lon: 0.0, altitude_m: alt,
-            speed_kph: 50.0, heading_deg: 0.0, drone_class: DroneClass::QuadcopterSmall,
-            confidence: 0.9, sensor_type: "r".into(), first_seen_ms: 0, last_seen_ms: 0,
+            track_id: "T1".into(),
+            lat: 0.0,
+            lon: 0.0,
+            altitude_m: alt,
+            speed_kph: 50.0,
+            heading_deg: 0.0,
+            drone_class: DroneClass::QuadcopterSmall,
+            confidence: 0.9,
+            sensor_type: "r".into(),
+            first_seen_ms: 0,
+            last_seen_ms: 0,
         }
     }
 

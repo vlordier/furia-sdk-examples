@@ -15,7 +15,12 @@ use uuid::Uuid;
 struct StrikeAssessor;
 
 impl AssessmentEngine for StrikeAssessor {
-    fn assess(&self, mission_id: &str, events: &[SimEvent], _handle: &ModuleHandle) -> Result<BattleDamageAssessment, AssessmentError> {
+    fn assess(
+        &self,
+        mission_id: &str,
+        events: &[SimEvent],
+        _handle: &ModuleHandle,
+    ) -> Result<BattleDamageAssessment, AssessmentError> {
         let mut hit_detected = false;
         let mut collateral = false;
 
@@ -30,14 +35,24 @@ impl AssessmentEngine for StrikeAssessor {
 
         Ok(BattleDamageAssessment {
             mission_id: mission_id.into(),
-            target_status: if hit_detected { "destroyed".into() } else { "missed".into() },
+            target_status: if hit_detected {
+                "destroyed".into()
+            } else {
+                "missed".into()
+            },
             confidence: if hit_detected { 0.92 } else { 0.2 },
             collateral_reported: Some(collateral),
-            remarks: if hit_detected { "Direct hit confirmed by impact sensor".into() } else { "No impact event observed".into() },
+            remarks: if hit_detected {
+                "Direct hit confirmed by impact sensor".into()
+            } else {
+                "No impact event observed".into()
+            },
         })
     }
 
-    fn health(&self) -> ModuleHealth { ModuleHealth::Healthy }
+    fn health(&self) -> ModuleHealth {
+        ModuleHealth::Healthy
+    }
 }
 
 fn main() {
@@ -46,13 +61,15 @@ fn main() {
 
     let events = vec![
         SimEvent {
-            event_type: "impact".into(), source: "weapon".into(),
+            event_type: "impact".into(),
+            source: "weapon".into(),
             target: Some("strike-001".into()),
             params: serde_json::json!({"offset_m": 2.5}),
             timestamp_ms: 1000,
         },
         SimEvent {
-            event_type: "splash".into(), source: "sensor".into(),
+            event_type: "splash".into(),
+            source: "sensor".into(),
             target: Some("strike-001".into()),
             params: serde_json::json!({"visible": true}),
             timestamp_ms: 2000,
@@ -60,8 +77,13 @@ fn main() {
     ];
 
     println!("=== Battle Damage Assessment ===");
-    let bda = assessor.assess("strike-001", &events, &handle).expect("BDA assessment should succeed with valid events");
-    println!(" Status: {} (confidence {:.2})", bda.target_status, bda.confidence);
+    let bda = assessor
+        .assess("strike-001", &events, &handle)
+        .expect("BDA assessment should succeed with valid events");
+    println!(
+        " Status: {} (confidence {:.2})",
+        bda.target_status, bda.confidence
+    );
     println!(" Collateral reported: {:?}", bda.collateral_reported);
     println!(" Remarks: {}", bda.remarks);
 }
@@ -74,7 +96,13 @@ mod tests {
     fn test_hit_detected() {
         let a = StrikeAssessor;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let ev = vec![SimEvent { event_type: "impact".into(), source: "w".into(), target: Some("m1".into()), params: serde_json::json!({}), timestamp_ms: 0 }];
+        let ev = vec![SimEvent {
+            event_type: "impact".into(),
+            source: "w".into(),
+            target: Some("m1".into()),
+            params: serde_json::json!({}),
+            timestamp_ms: 0,
+        }];
         let bda = a.assess("m1", &ev, &h).unwrap();
         assert_eq!(bda.target_status, "destroyed");
     }
@@ -91,7 +119,13 @@ mod tests {
     fn test_collateral_flag() {
         let a = StrikeAssessor;
         let h = ModuleHandle::new_test(Uuid::new_v4());
-        let ev = vec![SimEvent { event_type: "collateral".into(), source: "s".into(), target: None, params: serde_json::json!({}), timestamp_ms: 0 }];
+        let ev = vec![SimEvent {
+            event_type: "collateral".into(),
+            source: "s".into(),
+            target: None,
+            params: serde_json::json!({}),
+            timestamp_ms: 0,
+        }];
         let bda = a.assess("m1", &ev, &h).unwrap();
         assert_eq!(bda.collateral_reported, Some(true));
     }
