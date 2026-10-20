@@ -11,9 +11,9 @@
 - Share code only when implementations have the same semantics and a shared
   helper makes the example clearer. Similar syntax alone is not a reason to
   couple separate domain examples.
-- `furia-sdk` is declared centrally in the workspace. Keep local development on
-  the configured Core path dependency and release examples on the documented
-  tagged dependency; do not mix versions across member crates.
+- `furia-sdk` is declared centrally and pinned to an immutable Core revision.
+  Keep that source available to standalone CI; update the revision and lockfile
+  together only after validating all members.
 
 ## Rust quality
 

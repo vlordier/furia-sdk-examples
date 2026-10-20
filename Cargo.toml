@@ -19,9 +19,8 @@ rust-version = "1.75"
 unsafe_code = { level = "forbid" }
 
 [workspace.dependencies]
-# Use local furia-core for development (comment out and uncomment git line for releases).
-furia-sdk = { path = "../furia-core/crates/platform/furia-sdk" }
-# furia-sdk = { git = "https://github.com/vlordier/furia-core.git", tag = "v0.1.0" }
+# Pin the SDK API revision so CI builds without a sibling furia-core checkout.
+furia-sdk = { version = "0.1.0", git = "https://github.com/vlordier/furia-core.git", rev = "84595d7e1c515703511b3d1344ed49c7d37602eb" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 uuid = { version = "1.0", features = ["v4"] }
