@@ -2,10 +2,7 @@
 # See https://embarkstudios.github.io/cargo-deny/
 
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
-notice = "warn"
-severity-threshold = "low"
+unmaintained = "workspace"
 ignore = []
 
 [licenses]
@@ -19,8 +16,11 @@ allow = [
   "Unicode-DFS-2016",
   "MPL-2.0",
   "OpenSSL",
+  "Zlib",
+  "CC0-1.0",
+  "CDLA-Permissive-2.0",
+  "Unicode-3.0",
 ]
-deny = []
 exceptions = []
 
 [bans]

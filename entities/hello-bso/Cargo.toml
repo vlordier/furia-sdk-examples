@@ -1,6 +1,7 @@
 [package]
 name = "hello-bso"
 version.workspace = true
+license.workspace = true
 edition.workspace = true
 description = "Hello World: BattlespaceObject — the authoritative COP track type (STANAG 4255 / APP-6)"
 

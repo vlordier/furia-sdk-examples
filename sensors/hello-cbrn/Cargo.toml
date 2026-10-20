@@ -1,6 +1,7 @@
 [package]
 name = "hello-cbrn"
 version.workspace = true
+license.workspace = true
 edition.workspace = true
 description = "Hello World: implementing CbrnProvider — Gaussian plume dispersion"
 

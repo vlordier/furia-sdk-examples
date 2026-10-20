@@ -1,6 +1,7 @@
 [package]
 name = "hello-kill-chain"
 version.workspace = true
+license.workspace = true
 edition.workspace = true
 description = "Hello World: implementing KillChainOrchestrator — D-DIL automation for C-UAS"
 

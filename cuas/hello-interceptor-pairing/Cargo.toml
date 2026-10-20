@@ -1,6 +1,7 @@
 [package]
 name = "hello-interceptor-pairing"
 version.workspace = true
+license.workspace = true
 edition.workspace = true
 description = "Hello World: implementing InterceptorPairingProvider — map threats to effectors"
 
